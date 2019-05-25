@@ -32,11 +32,11 @@ In *arXiv*, 2018.
 - gcc 5.4.0
 - Pyenv or Anaconda
 
-and Python dependencies list in `3DTracking/requirements.txt` 
+and Python dependencies list in `3d-tracking/requirements.txt` 
 
 ## Quick Start
 In this section, you will train a model from scratch, test our pretrained models, and reproduce our evaluation results.
-For more detailed instructions, please refer to [`DOCUMENTATION.md`](3DTracking/DOCUMENTATION.md).
+For more detailed instructions, please refer to [`DOCUMENTATION.md`](3d-tracking/DOCUMENTATION.md).
 
 ### Installation
 - Clone this repo:
@@ -85,7 +85,7 @@ For a quick start, we suggest using GTA `val` set as a starting point. You can g
 python loader/download.py mini
 ```
 
-More details can be found in [3d-tracking](3d-tracking/README.md)
+More details can be found in [3d-tracking](3d-tracking/README.md).
 
 ### Execution
 
