@@ -24,5 +24,5 @@ echo $(whoami)" : "${SESSION}_${TEST_EPOCH}_${TEST_CHECKPOINT}" Finish!"
 echo "Copy output pkl file to dataset folder..."
 cp \
     vis/faster_rcnn_${SESSION}_${TEST_EPOCH}_${TEST_CHECKPOINT}/detections_${PHASE}.pkl \
-    data/gta_data/gta5_tracking/gta_${PHASE}_detections.pkl
+    data/gta5_tracking/gta_${PHASE}_detections.pkl
 echo "Done!!"

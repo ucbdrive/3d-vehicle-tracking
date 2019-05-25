@@ -57,7 +57,7 @@ for version in ['150-50-20', '150-50-50', '500-150-80', '750-250-150',
         name = 'vg_{}_{}'.format(version, split)
         __sets[name] = (lambda split=split, version=version: vg(version, split))
 
-data_path = 'data/gta_data/gta5_tracking'
+data_path = 'data/gta5_tracking'
 for split in ['train', 'val', 'test']:
     name = 'gta_det_{}'.format(split)
     __sets[name] = (
@@ -72,7 +72,7 @@ for split in ['train', 'val', 'val1', 'val2', 'test']:
         lambda split=split, devkit_path=devkit_path,
                data_path=data_path: imagenet(split, devkit_path, data_path))
 
-KITTI_devkit_path = 'data/kitti_data/tracking'
+KITTI_devkit_path = 'data/kitti_tracking'
 for split in ['training', 'testing']:
     name = 'kitti_{}'.format(split)
     __sets[name] = (lambda split=split: kitti(split, KITTI_devkit_path))

@@ -21,22 +21,19 @@ mv resnet101-5d3b4d8f.pth resnet101_caffe.pth
 cd ${_PWD}
 
 # Link GTA and KITTI dataset to data
-mkdir -p data/gta_data/
-mkdir -p data/kitti_data/
-
 # get gta data
-cd data/gta_data
+cd data/
 ln -s ${_DATA_GTA} gta5_tracking
-echo "mv GTA dataset (train, val, test) to data/gta_data/gta5_tracking"
+echo "mv GTA dataset (train, val, test) to data/gta5_tracking"
 
 # get kitti data
-cd ${_PWD}/data/kitti_data
-ln -s ${_DATA_KITTI_T} tracking
-echo "mv KITTI tracking dataset (train, test) to data/kitti_data/tracking"
+cd ${_PWD}/data/
+ln -s ${_DATA_KITTI_T} kitti_tracking
+echo "mv KITTI tracking dataset (train, test) to data/kitti_tracking"
 
 # If you downloaded detection dataset, uncomment the following two lines
-#ln -s ${_DATA_KITTI_D} detection
-#echo "mv KITTI detection dataset (train, test) to data/kitti_data/object"
+#ln -s ${_DATA_KITTI_D} kitti_object 
+#echo "mv KITTI detection dataset (train, test) to data/kitti_object"
 
 # create folder vis/ (detection output) and models (model weights)
 cd ${_PWD}
