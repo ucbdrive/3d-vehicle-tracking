@@ -6,6 +6,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from functools import reduce  # forward compatibility for Python 3
+import operator
 
 import numpy as np
 
@@ -47,3 +49,26 @@ def filter_small_boxes(boxes, min_size):
     h = boxes[:, 3] - boxes[:, 1]
     keep = np.where((w >= min_size) & (h > min_size))[0]
     return keep
+
+
+def get_from_dict(data_dict, map_list):
+    assert isinstance(map_list, list)
+    return reduce(operator.getitem, map_list, data_dict)
+
+
+def get_label_array(boxes, key_list, empty_shape):
+    if len(boxes) == 0:
+        return np.empty(empty_shape)
+    return np.array([get_from_dict(box, key_list) for box in boxes])
+
+
+def get_box2d_array(boxes):
+    if len(boxes) == 0:
+        return np.empty([0, 5])
+    return np.array([[box['box2d']['x1'],
+                      box['box2d']['y1'],
+                      box['box2d']['x2'],
+                      box['box2d']['y2'],
+                      box['box2d']['confidence']] for box in boxes],
+                    dtype=np.float32)
+

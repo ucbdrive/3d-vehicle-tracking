@@ -20,7 +20,7 @@ import math
 from glob import glob
 
 from datasets.imdb import imdb
-import datasets.ds_utils as ds_utils
+import datasets.ds_utils as ds
 from model.utils.config import cfg
 
 
@@ -305,36 +305,24 @@ class gta_det(imdb):
         # Default to roidb handler
         self.set_proposal_method('gt')
 
-        self._calculate_mean_dimension()
 
     def _get_ann_file(self):
         if cfg.USE_DEBUG_SET:
-            return osp.join(self._data_path, 'track-dev.json')  # train
+            return osp.join(self._data_path, 'train')  # train
         else:
             return osp.join(self._data_path, cfg.ANNO_PATH)  # train or val
 
     def _read_dataset(self):
         ann_file = self._get_ann_file()
-        jsonfiles = sorted(glob(osp.join(ann_file, '*/track_parse.json')))
+        jsonfiles = sorted(glob(osp.join(ann_file, 'label', '*.json')))
         self.dataset = []
         self.endvid = []
-        for i in jsonfiles:
-            dataset = json.load(open(i))
+        for jf in jsonfiles:
+            dataset = [json.load(open(it)) for it in json.load(open(jf))]
             self.dataset += dataset
             endvid = [False] * len(dataset)
             endvid[-1] = True
             self.endvid += endvid
-        # self.dataset = json.load(open(ann_file))
-        # self.endvid = json.load(open(ann_file.replace('track', 'endvid')))
-
-        # ori_len = len(self.dataset)
-        # new_len = int(cfg.GTA_SIZE * ori_len)
-        # if ori_len > new_len:
-        #     print('=> Using a subset of GTA dataset, subset size: {
-        #     }'.format(cfg.GTA_SIZE))
-        #     self.dataset = self.dataset[:new_len]
-        #     self.endvid = self.endvid[:new_len]
-        #     self.endvid[-1] = True
 
     def _load_image_set_index(self):
         """
@@ -346,10 +334,8 @@ class gta_det(imdb):
         """
         Return the absolute path to image i in the image sequence.
         """
-        img_path = osp.join(self.dataset[self._image_index[i]]['dset_name'],
-                            str(self.dataset[self._image_index[i]][
-                                    'timestamp']) + '_final.jpg')
-        return osp.join(self._data_path, img_path)
+        return osp.join(self._data_path, 'image', 
+                    self.dataset[self._image_index[i]]['name'])
 
     def image_id_at(self, i):
         """
@@ -363,21 +349,10 @@ class gta_det(imdb):
         This function loads/saves from/to a cache file to speed up future calls.
         """
         cache_file = osp.join(self.cache_path, self.name + '_gt_roidb.pkl')
-        # Do not load here. Too many bugs!
-        # if osp.exists(cache_file) and not cfg.USE_DEBUG_SET:
-        #     with open(cache_file, 'rb') as fid:
-        #         roidb = pickle.load(fid)
-        #     print(('{} gt roidb loaded from {}'.format(self.name, 
-        #     cache_file)))
-        #     return roidb
 
         gt_roidb = [self._load_gta_annotation(index)
                     for index in self._image_index]
 
-        # if not cfg.USE_DEBUG_SET:
-        #    with open(cache_file, 'wb') as fid:
-        #        pickle.dump(gt_roidb, fid, protocol=pickle.HIGHEST_PROTOCOL)
-        #    print(('wrote gt roidb to {}'.format(cache_file)))
         return gt_roidb
 
     def _load_gta_annotation(self, index):
@@ -390,90 +365,38 @@ class gta_det(imdb):
         height = 1080
 
         info = self.dataset[self.image_id_at(index)]
-
-        objs = info['object']  # a list of dict
+        labels = info['labels']  # a list of dict
         # get the kitti part out and insert the tracking id
-        cam_coord = info['pose']['position']
-        cam_rot = info['pose']['rotation']
+        boxes = ds.get_box2d_array(labels).astype(float)[:, :4]
+        tid = ds.get_label_array(labels, ['id'], (0)).astype(int)
+        num_objs = len(tid)
+        #gt_classes = ds.get_label_array(labels, ['class'], (0))
+        gt_classes = np.array(['foreground']*num_objs)
+        # actually just one single value,
+        ignore = ds.get_label_array(labels, 
+                            ['attributes', 'ignore'], (0)).astype(int)
+        cam_calib = np.array(info['intrinsics']['cali'])
+        location = ds.get_label_array(labels, ['box3d', 'location'],
+                                   (0, 3)).astype(float)
+        ext_loc = np.hstack([location, np.ones([len(location), 1])])  # (B, 4)
+        proj_loc = ext_loc.dot(cam_calib.T)  # (B, 4) dot (3, 4).T => (B, 3)
+        center = proj_loc[:, :2] / proj_loc[:, 2:3]  # normalize
 
-        new_obj = []
-        for obj in objs:
-            t_id = obj['tracking_id']
-            hash_id = obj['hash']
-            k_obj = obj['kitti']
-            # depth_gt = max(0, obj['location'][2])
-            k_obj['tracking_id'] = t_id
-            k_obj['hash'] = hash_id
-            # k_obj['_depth'] = depth_gt
-            k_obj['cam_coord'] = cam_coord
-            k_obj['cam_rot'] = cam_rot
-            k_obj['xxx'] = obj['xxx']
-            k_obj['yyy'] = obj['yyy']
-            k_obj['zzz'] = obj['zzz']
-
-            if 'ignore' in obj.keys():
-                k_obj['ignore'] = obj['ignore']
-            else:
-                k_obj['ignore'] = False
-            new_obj.append(k_obj)
-        objs = new_obj
-        # Sanitize bboxes -- some are invalid
-        valid_objs = []
-        for obj in objs:
-            # x1 = np.max((0, obj['bbox'][0]))
-            # y1 = np.max((0, obj['bbox'][1]))
-            # x2 = np.min((width - 1, x1 + np.max((0, obj['bbox'][2] - 1))))
-            # y2 = np.min((height - 1, y1 + np.max((0, obj['bbox'][3] - 1))))
-            x1, y1, x2, y2 = obj['bbox']
-            # if obj['type'] in self.LEGAL_CLASSES and x2 >= (x1 + 
-            # cfg.MIN_WIDTH) and y2 >= (y1 + cfg.MIN_HEIGHT) and
-            # obj['_depth'] < cfg.MAX_DEPTH:
-            if obj[
-                'type'] in self.LEGAL_CLASSES and x2 >= x1 and y2 >= y1 and \
-                    not \
-                            obj['ignore']:
-                # if obj['type'] in self.LEGAL_CLASSES and x2 >= x1 and y2 >=
-                # y1:
-                obj['type'] = self.CLASS_PARSE_DICT[obj['type']]
-                obj['clean_bbox'] = [x1, y1, x2, y2]
-                valid_objs.append(obj)
-        objs = valid_objs
-        num_objs = len(objs)
-
-        # cam_coord_np = np.array([cam_coord] * num_objs)
-        # cam_rot_np = np.array([cam_rot] * num_objs)
-
-        boxes = np.zeros((num_objs, 4), dtype=np.uint16)
-        gt_classes = np.zeros((num_objs), dtype=np.int32)
+        seg_areas = (boxes[:, 2] - boxes[:, 0] + 1) * \
+                    (boxes[:, 3] - boxes[:, 1] + 1)
         overlaps = np.zeros((num_objs, self.num_classes), dtype=np.float32)
         seg_areas = np.zeros((num_objs), dtype=np.float32)
-        ignore = np.zeros((num_objs), dtype=np.uint16)
-        endvid = np.zeros((num_objs),
-                          dtype=np.uint16)  # actually just one single value,
+        endvid = np.zeros((num_objs), dtype=np.uint16) 
         # pad to make it consistent
-        xxx = np.zeros((num_objs, 8), dtype=np.float32)
-        yyy = np.zeros((num_objs, 8), dtype=np.float32)
-        zzz = np.zeros((num_objs, 8), dtype=np.float32)
-
         if self.endvid[self.image_id_at(index)]:
             endvid += 1
 
-        for ix, obj in enumerate(objs):
-            cls = self._class_to_ind[obj['type'].strip()]
-            obj['class_id'] = cls  # add in the cls information
-            boxes[ix, :] = obj['clean_bbox']
+        for ix in range(num_objs):
+            cls = self._class_to_ind[gt_classes[ix].strip()]
             gt_classes[ix] = cls
-            [x1, y1, x2, y2] = obj['clean_bbox']
-            seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
-            if obj['ignore']:
-                ignore[ix] = 1
-
             overlaps[ix, cls] = 1.0
-            xxx[ix] = obj['xxx']
-            yyy[ix] = obj['yyy']
-            zzz[ix] = obj['zzz']
 
-        ds_utils.validate_boxes(boxes, width=width, height=height)
+        ds.validate_boxes(boxes, width=width, height=height)
         overlaps = scipy.sparse.csr_matrix(overlaps)
         info_set = {'width': width,
                     'height': height,
@@ -484,126 +407,10 @@ class gta_det(imdb):
                     'seg_areas': seg_areas,
                     'ignore': ignore,
                     'end_vid': endvid,
-                    'xxx': xxx,
-                    'yyy': yyy,
-                    'zzz': zzz,
+                    'center': center
                     }
-        pose_data = self._fetch_pose_annotation(objs)
-        for k, v in list(pose_data.items()):
-            assert k not in list(info_set.keys()), \
-                '{} not in list, should not be here!'.format(k)
-            info_set[k] = v
         return info_set
 
-    def _fetch_pose_annotation(self, objs):
-        # the objs are already clean
-        n_obj = len(objs)
-
-        dims = np.zeros((n_obj, 3), dtype=np.float32)
-        centers = np.zeros((n_obj, 2), dtype=np.float32)
-        depths = np.zeros((n_obj), dtype=np.float32)
-        alphas = np.zeros((n_obj), dtype=np.float32)
-        translations = np.zeros((n_obj, 3), dtype=np.float32)
-        cam_coord = np.zeros((n_obj, 3), dtype=np.float32)
-        cam_rot = np.zeros((n_obj, 3), dtype=np.float32)
-        occluded = np.zeros((n_obj), dtype=np.float32)
-        tracking_ids = np.zeros((n_obj), dtype=np.float32)
-
-        bin1_cls = np.zeros((n_obj), dtype=np.uint8)
-        bin2_cls = np.zeros((n_obj), dtype=np.uint8)
-        bin1_res = np.zeros((n_obj), dtype=np.float32)
-        bin2_res = np.zeros((n_obj), dtype=np.float32)
-
-        # additional information
-        hashes = np.zeros((n_obj), dtype=np.uint8)
-        colors = np.zeros((n_obj, 3), dtype=np.float32)
-
-        for i, obj in enumerate(objs):
-            dims[i, :] = obj['dimensions'] - np.array(
-                self.mean_dim[obj['class_id'], ...], dtype=np.float32)
-            depths[i] = max(0, obj['location'][2])
-            alphas[i] = obj['alpha']
-            translations[i, :] = np.array(obj['location'], dtype=np.float32)
-            cam_rot[i, :] = np.array(obj['cam_rot'], dtype=np.float32)
-            cam_coord[i, :] = np.array(obj['cam_coord'], dtype=np.float32)
-            occluded[i] = obj['occluded']
-            tracking_ids[i] = obj['tracking_id']
-
-            alpha = alphas[i]
-            if alpha < np.pi / 6. or alpha > 5 * np.pi / 6.:
-                bin1_cls[i] = 1
-                bin1_res[i] = alpha - (-0.5 * np.pi)
-            else:
-                bin1_cls[i] = 0
-                bin1_res[i] = 0
-            if alpha > -np.pi / 6. or alpha < -5 * np.pi / 6.:
-                bin2_cls[i] = 1
-                bin2_res[i] = alpha - (0.5 * np.pi)
-            else:
-                bin2_cls[i] = 0
-                bin2_res[i] = 0
-
-            if obj['hash'] in self.HASH_PARSE_DICT.keys():
-                hash = self.HASH_PARSE_DICT[obj['hash']]
-            else:
-                # print('Hash not in keys!')
-                hash = 10000
-            hashes[i] = hash
-            # TODO: replace 1920, 1080
-            x1, y1, x2, y2 = obj['clean_bbox']
-
-            X = cfg.FOCAL * obj['location'][0] / obj['location'][2] + 1920 // 2
-            # X = (X > 0) * X + (X <= 0) * (x1+x2) / 2
-            Y = cfg.FOCAL * obj['location'][1] / obj['location'][2] + 1080 // 2
-            # Y = (Y > 0) * Y + (Y <= 0) * (y1+y2) / 2
-            center = np.array([X, Y])
-            centers[i, :] = center
-
-        pose_info = {'dim': dims,
-                     'depth_gt': depths,
-                     'alpha_gt': alphas,
-                     'tracking_id': tracking_ids,
-                     'bin1_cls': bin1_cls,
-                     'bin2_cls': bin2_cls,
-                     'bin1_res': bin1_res,
-                     'bin2_res': bin2_res,
-                     'occluded': occluded,
-                     'cam_coord': cam_coord,
-                     'cam_rot': cam_rot,
-                     'hash': hashes,
-                     'color': colors,
-                     'center': centers
-                     }
-
-        ## post-processing
-        # 'detph' use inverse depth processing, 'depth_gt' use origin depth
-
-        # TODO: insert whether end video
-        # if hasattr(self, 'end_vid'):
-        #     pose_info['end_vid'] = self.end_vid[this_id]
-
-        return pose_info
-
-    def _calculate_mean_dimension(self):
-        # calculate mean dimension for deletion
-        n_class = len(self._classes)
-        self.mean_dim = np.zeros([n_class, 3], dtype=np.float32)
-        n_cls = np.zeros([n_class], dtype=np.uint64)
-        for d in self.dataset:
-            objs = d['object']
-            for obj in objs:
-                obj = obj['kitti']
-                if obj['type'] in self.LEGAL_CLASSES:
-                    cls_id = self._class_to_ind[self.CLASS_PARSE_DICT[
-                        obj['type']]]  # parsed class index
-                    n_cls[cls_id] += 1
-                    self.mean_dim[cls_id, :] += np.array(obj['dimensions'])
-        for i in range(1, n_class):
-            self.mean_dim[i, :] /= n_cls[i]
-            print('{}: {}'.format(self._classes[i], n_cls[i]))
-
-        print('==> Calculated mean dimensions: ')
-        print((self.mean_dim))
 
     def _get_widths(self):
         return [r['width'] for r in self.roidb]
