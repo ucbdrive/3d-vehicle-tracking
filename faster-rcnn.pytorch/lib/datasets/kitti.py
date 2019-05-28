@@ -7,8 +7,6 @@
 # --------------------------------------------------------
 
 import os
-import pdb
-
 import datasets.imdb as imdb
 import numpy as np
 import cv2
@@ -16,7 +14,7 @@ import pickle as cPickle
 import uuid
 from datasets.imdb import imdb
 from glob import glob
-import scipy
+
 from datasets.kitti_eval import kitti_eval
 
 
@@ -24,13 +22,11 @@ class kitti(imdb):
     def __init__(self, image_set, devkit_path=None, result_path=None,
                  mask_size=-1, binary_thresh=None):
         super(kitti, self).__init__('kitti_' + image_set)  # set self.name
-        print(image_set)
-        pdb.set_trace()
         self._image_set = image_set
         self._devkit_path = self._get_default_path() if devkit_path is None \
             else devkit_path
 
-        self._data_path = os.path.join(self._devkit_path, image_set, 'image_2')
+        self._data_path = os.path.join(self._devkit_path, image_set, 'image_02')
         self._classes = ('__background__', 'Car', 'Truck', 'Tram')
         self._class_to_ind = dict(zip(self._classes, range(len(self._classes))))
         self._image_ext = '.png'
@@ -59,7 +55,8 @@ class kitti(imdb):
         """
         Construct an image path from the image's "index" identifier.
         """
-        image_path = os.path.join(self._data_path, index + self._image_ext)
+        image_path = os.path.join(self._data_path, index[0],
+                                  index[1] + self._image_ext)
         assert os.path.exists(image_path), 'Path does not exist: {}'.format(
             image_path)
         return image_path
@@ -69,7 +66,7 @@ class kitti(imdb):
         Load the indexes listed in this dataset's image set file.
         """
         import os
-        imglist = sorted(glob(os.path.join(self._data_path, '*.png')))
+        imglist = sorted(glob(os.path.join(self._data_path, '*', '*.png')))
         to_del = []
         if self._image_set == 'training':
             for a in imglist:
@@ -80,7 +77,8 @@ class kitti(imdb):
                     to_del.append(a)
             for a in to_del:
                 imglist.remove(a)
-        imgset = [s.split('/')[-1].replace('.png', '') for s in imglist]
+        imgset = [(s.split('/')[-2], s.split('/')[-1].replace('.png', '')) for s
+                  in imglist]
         return imgset
 
     def _get_default_path(self):
@@ -110,7 +108,7 @@ class kitti(imdb):
         return gt_roidb
 
     def rpn_roidb(self):
-        if self._image_set != 'test':
+        if self._image_set != 'testing':
             gt_roidb = self.gt_roidb()
             rpn_roidb = self._load_rpn_roidb(gt_roidb)
             roidb = imdb.merge_roidbs(gt_roidb, rpn_roidb)
@@ -133,73 +131,60 @@ class kitti(imdb):
         Load image and bounding boxes info from TXT file in the kitti format.
         """
         if self._image_set == 'testing':
-            imagename = os.path.join(self._devkit_path, 'testing/image_2',
-                                     index + '.png')
-            img = cv2.imread(imagename)
-            height = img.shape[0]
-            width = img.shape[1]
-
+            track, frame = index
+            imagename = os.path.join(self._devkit_path, 'testing/image_02',
+                                     track, frame + '.png')
+            width = 1242
+            height = 375
+            print(imagename)
             return {'image': imagename,
                     'height': height,
                     'width': width,
                     'flipped': False,
-                    'is_train': False}
+                    'is_train': False,
+                    'gt_overlaps': np.zeros((1, 1)),
+                    'gt_classes': np.zeros((1, 1))}
 
-        filename = os.path.join(self._devkit_path, 'training/label_2',
-                                index + '.txt')
-        imagename = os.path.join(self._devkit_path, 'training/image_2',
-                                 index + '.png')
-        caliname = os.path.join(self._devkit_path, 'training/calib',
-                                index + '.txt')
+        track, frame = index
+        filename = os.path.join(self._devkit_path, 'training/label_02', track,
+                                frame + '.txt')
+        imagename = os.path.join(self._devkit_path, 'training/image_02', track,
+                                 frame + '.png')
         img = cv2.imread(imagename)
         print(imagename)
-        fields = [line.split() for line in open(caliname)]
-        cali = np.asarray(fields[2][1:], dtype=np.float32).reshape(3, 4)
-        height = img.shape[0]
-        width = img.shape[1]
+        width = img.shape[0]
+        height = img.shape[1]
         f = open(filename)
         lines = f.readlines()
         num_objs = 0
         for l in lines:
-            str_cls = l.split()
-            if str(str_cls[0]) in self._classes or str(str_cls[0]) == 'Van':
+            str_cls = l.split()[1:]
+            if str(str_cls[1]) in self._classes or str(str_cls[1]) == 'Van':
                 num_objs = num_objs + 1
-        num_objs = num_objs
-        #        print 'num_objs',num_objs
-        f_cali = open(caliname)
-        f_cali = f_cali.readlines()
-        focal = float(f_cali[2].split(' ')[1])
         boxes = np.zeros((num_objs, 4), dtype=np.uint16)
         gt_classes = np.zeros((num_objs), dtype=np.int32)
         overlaps = np.zeros((num_objs, self.num_classes), dtype=np.float32)
         seg_areas = np.zeros((num_objs), dtype=np.float32)
         ix = 0
-        centers = np.zeros((num_objs, 2), dtype=np.float32)
         for line in lines:
-            data = line.split()
-            if str(data[0]) == 'Van':
-                data[0] = 'Car'
-            if str(data[0]) not in self._classes:
+            data = line.split()[1:]
+            if str(data[1]) == 'Van':
+                data[1] = 'Car'
+            if str(data[1]) not in self._classes:
                 continue
-            x1 = int(float(data[4]))
-            y1 = int(float(data[5]))
-            x2 = int(float(data[6]))
-            y2 = int(float(data[7]))
-            cls = self._class_to_ind[data[0]]
+            x1 = int(float(data[5]))
+            y1 = int(float(data[6]))
+            x2 = int(float(data[7]))
+            y2 = int(float(data[8]))
+            cls = self._class_to_ind[data[1]]
             boxes[ix, :] = [x1, y1, x2, y2]
             gt_classes[ix] = cls
             overlaps[ix, cls] = 1.0
             seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
-            loc = np.array(
-                [float(data[11]), float(data[12]) - float(data[8]) / 2
-                    , float(data[13]), 1])
-            k = cali.dot(loc)
-            center = k[:2] / k[2]
-            centers[ix, :] = center
             ix = ix + 1
         #      print "aaa",gt_classes
         #       a
-        overlaps = scipy.sparse.csr_matrix(overlaps)
+        # overlaps = scipy.sparse.csr_matrix(overlaps)
         # print img.height,img.width
         return {'boxes': boxes,
                 'image': imagename,
@@ -211,8 +196,7 @@ class kitti(imdb):
                 'max_overlaps': overlaps.max(axis=1),
                 'flipped': False,
                 'seg_areas': seg_areas,
-                'is_train': True,
-                'center': centers}
+                'is_train': True}
 
     def _do_python_eval(self, output_dir='output'):
         annopath = os.path.join(self._devkit_path, 'training/label_2',

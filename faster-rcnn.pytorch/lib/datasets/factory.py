@@ -16,9 +16,8 @@ from datasets.coco import coco
 from datasets.imagenet import imagenet
 from datasets.vg import vg
 from datasets.gta import gta_det
-from datasets.kitti_T import kitti
+from datasets.kitti import kitti
 
-import numpy as np
 
 # Set up voc_<year>_<split>
 for year in ['2007', '2012']:
