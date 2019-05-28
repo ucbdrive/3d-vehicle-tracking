@@ -316,8 +316,6 @@ def val_model(args, val_loader, model, epoch, phase, logger):
         ignore_, \
         tid_gt = targets
 
-        cam_rot = box_info['cam_rot'].cpu().data.numpy()
-        cam_loc = box_info['cam_loc'].cpu().data.numpy()
         box_gt = rois_gt.cpu().data.numpy()
         box_pd = box_output['rois'].cpu().data.numpy()
         dim_gt = dim_gt_.cpu().data.numpy()

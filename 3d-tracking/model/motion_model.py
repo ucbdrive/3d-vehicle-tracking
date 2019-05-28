@@ -135,7 +135,7 @@ class LSTMKF(nn.Module):
         R = torch.cat(R_l).view(B, self.loc_dim, self.loc_dim)
         inv_S = torch.cat(inv_S_).view(B, self.loc_dim, self.loc_dim)
 
-        S = P_ + R
+        #S = P_ + R
 
         K = torch.matmul(P_, inv_S)
 

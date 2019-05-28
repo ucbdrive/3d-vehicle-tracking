@@ -10,12 +10,9 @@ from __future__ import print_function
 
 import os
 from datasets.imdb import imdb
-import datasets.ds_utils as ds_utils
 import xml.etree.ElementTree as ET
 import numpy as np
 import scipy.sparse
-import scipy.io as sio
-import model.utils.cython_bbox
 import pickle
 import subprocess
 import uuid
@@ -278,7 +275,7 @@ class pascal_voc(imdb):
             .format(self._devkit_path, self._get_comp_id(),
                     self._image_set, output_dir)
         print(('Running:\n{}'.format(cmd)))
-        status = subprocess.call(cmd, shell=True)
+        _ = subprocess.call(cmd, shell=True)
 
     def evaluate_detections(self, all_boxes, output_dir):
         pdb.set_trace()

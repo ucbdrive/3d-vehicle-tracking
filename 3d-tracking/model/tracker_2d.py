@@ -241,7 +241,6 @@ class Tracker2D:
             res_cen = data['center_pd'][keep]
 
         gt_boxes = data['rois_gt']
-        num_boxes = len(gt_boxes)
         dim_gt = data['dim_gt']
         alpha_gt = data['alpha_gt']
         depth_gt = data['depth_gt']

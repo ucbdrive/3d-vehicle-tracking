@@ -6,17 +6,10 @@
 
 
 import os.path as osp
-import sys
-import os
 import numpy as np
 import scipy.sparse
-import scipy.io as sio
-import pickle
 import json
-import uuid
 
-import time
-import math
 from glob import glob
 
 from datasets.imdb import imdb
@@ -212,82 +205,6 @@ class gta_det(imdb):
                                 -1995326987: 31, -394074634: 87, -227741703: 24,
                                 1909141499: 107,
                                 767087018: 15}
-        # for skip=5
-        # self.HASH_PARSE_DICT = {914654722: 75, -1311240698: 83, 
-        # -1627000575: 107, -14495224: 74, -682211828: 36, 
-        # 1951180813: 22,
-        #                    -1934452204: 48, -1193103848: 80, 1917016601: 
-        #                    127, 1739845664: 136, 873639469: 45, 
-        #                    2016857647: 40,
-        #                    -142942670: 8, -1205801634: 150, 108773431: 26, 
-        #                    -344943009: 76, 1069929536: 118, 
-        #                    1723137093: 81,
-        #                    -1477580979: 99, -591610296: 114, 850565707: 55,
-        #                    -16948145: 18, -599568815: 17, 
-        #                    499169875: 73,
-        #                    142944341: 109, 723973206: 104, -1651067813: 13,
-        #                    1032823388: 28, -947761570: 144, 
-        #                    2072687711: 43,
-        #                    1491375716: 145, -808831384: 25, 1830407356: 6, 
-        #                    741586030: 147, 1011753235: 143, 
-        #                    -233098306: 62,
-        #                    1177543287: 64, 1337041428: 49, -120287622: 149,
-        #                    -1683328900: 134, 2112052861: 10, 
-        #                    -431692672: 60,
-        #                    486987393: 1, 1349725314: 7, -685276541: 39, 
-        #                    -1045541610: 9, -1289722222: 116, 
-        #                    -1685021548: 4,
-        #                    699456151: 65, 886934177: 77, -1297672541: 111, 
-        #                    -1346687836: 121, 80636076: 102, 
-        #                    1737773231: 86,
-        #                    65402552: 108, -784816453: 112, 464687292: 3, 
-        #                    736902334: 30, 384071873: 59, 2046537925: 
-        #                    117,
-        #                    -304802106: 97, 418536135: 21, -2137348917: 122,
-        #                    -1041692462: 88, 1221512915: 14, 
-        #                    48339065: 125,
-        #                    1039032026: 101, 1269098716: 51, 850991848: 33, 
-        #                    1912215274: 61, 569305213: 123, 
-        #                    1348744438: 0,
-        #                    -1903012613: 34, -1461482751: 50, -119658072: 
-        #                    137, -1130810103: 47, 904750859: 2, 
-        #                    -810318068: 138,
-        #                    884422927: 85, -624529134: 58, -1255452397: 53, 
-        #                    1123216662: 27, 1171614426: 129, 
-        #                    1923400478: 82,
-        #                    1373123368: 84, -1883002148: 113, 2053223216: 
-        #                    19, 516990260: 139, -2072933068: 152, 
-        #                    -1137532101: 78,
-        #                    989381445: 130, -1207771834: 133, 1162065741: 
-        #                    56, -377465520: 72, 1762279763: 100, 
-        #                    970598228: 69,
-        #                    1777363799: 96, 1353720154: 142, -5153954: 54, 
-        #                    -956048545: 23, -713569950: 42, 
-        #                    -808457413: 91,
-        #                    1126868326: 93, 1876516712: 115, -1177863319: 
-        #                    16, 887537515: 128, 1747439474: 120, 
-        #                    -746882698: 52,
-        #                    -1987130134: 151, 1078682497: 35, -2124201592: 
-        #                    98, -1809822327: 106, 1938952078: 146, 
-        #                    841808271: 37,
-        #                    -1894894188: 87, 475220373: 70, -1883869285: 12,
-        #                    -1775728740: 90, 1886712733: 140, 
-        #                    -1696146015: 5,
-        #                    -1450650718: 71, -310465116: 92, -391594584: 63,
-        #                    2006918058: 67, 1518533038: 135, 
-        #                    1645267888: 103,
-        #                    -511601230: 79, -825837129: 15, -1622444098: 68,
-        #                    75131841: 20, -1122289213: 44, 
-        #                    1531094468: 95,
-        #                    -1800170043: 126, 1941029835: 119, -1705304628: 
-        #                    148, -1543762099: 11, -1189015600: 132,
-        #                    -1743316013: 32, -2095439403: 105, -1150599089: 
-        #                    89, -2076478498: 131, -1700801569: 124,
-        #                    -1089039904: 46, 1770332643: 141, -789894171: 
-        #                    38, -89291282: 57, 2136773105: 31, 
-        #                    1507916787: 66,
-        #                    -1995326987: 41, -394074634: 94, -227741703: 29,
-        #                    1909141499: 110, 767087018: 24}
 
         assert image_set in ['train', 'val', 'test']
         imdb.__init__(self, 'gta_det_' + image_set)
@@ -346,10 +263,7 @@ class gta_det(imdb):
     def gt_roidb(self):
         """
         Return the database of ground-truth regions of interest.
-        This function loads/saves from/to a cache file to speed up future calls.
         """
-        cache_file = osp.join(self.cache_path, self.name + '_gt_roidb.pkl')
-
         gt_roidb = [self._load_gta_annotation(index)
                     for index in self._image_index]
 
@@ -370,8 +284,9 @@ class gta_det(imdb):
         boxes = ds.get_box2d_array(labels).astype(float)[:, :4]
         tid = ds.get_label_array(labels, ['id'], (0)).astype(int)
         num_objs = len(tid)
-        #gt_classes = ds.get_label_array(labels, ['class'], (0))
-        gt_classes = np.array(['foreground']*num_objs)
+        #gt_cls = ds.get_label_array(labels, ['class'], (0))
+        gt_cls = np.array(['foreground']*num_objs)
+        gt_classes = np.ones(num_objs)
         # actually just one single value,
         ignore = ds.get_label_array(labels, 
                             ['attributes', 'ignore'], (0)).astype(int)
@@ -385,14 +300,13 @@ class gta_det(imdb):
         seg_areas = (boxes[:, 2] - boxes[:, 0] + 1) * \
                     (boxes[:, 3] - boxes[:, 1] + 1)
         overlaps = np.zeros((num_objs, self.num_classes), dtype=np.float32)
-        seg_areas = np.zeros((num_objs), dtype=np.float32)
         endvid = np.zeros((num_objs), dtype=np.uint16) 
         # pad to make it consistent
         if self.endvid[self.image_id_at(index)]:
             endvid += 1
 
         for ix in range(num_objs):
-            cls = self._class_to_ind[gt_classes[ix].strip()]
+            cls = self._class_to_ind[gt_cls[ix].strip()]
             gt_classes[ix] = cls
             overlaps[ix, cls] = 1.0
 
@@ -411,133 +325,3 @@ class gta_det(imdb):
                     }
         return info_set
 
-
-    def _get_widths(self):
-        return [r['width'] for r in self.roidb]
-
-    def append_flipped_images(self):
-        raise NotImplementedError(
-            'The function is not done yet. (Need to process pose transform)')
-        num_images = self.num_images
-        widths = self._get_widths()
-        for i in range(num_images):
-            boxes = self.roidb[i]['boxes'].copy()
-            oldx1 = boxes[:, 0].copy()
-            oldx2 = boxes[:, 2].copy()
-            boxes[:, 0] = widths[i] - oldx2 - 1
-            boxes[:, 2] = widths[i] - oldx1 - 1
-            assert (boxes[:, 2] >= boxes[:, 0]).all()
-            entry = {'width': widths[i],
-                     'height': self.roidb[i]['height'],
-                     'boxes': boxes,
-                     'gt_classes': self.roidb[i]['gt_classes'],
-                     'gt_overlaps': self.roidb[i]['gt_overlaps'],
-                     'flipped': True,
-                     'seg_areas': self.roidb[i]['seg_areas']}
-            # insert the remaining
-            for k, v in list(self.roidb[i].items()):
-                if k not in list(entry.keys()):
-                    entry[k] = v
-            self.roidb.append(entry)
-        self._image_index = self._image_index * 2
-
-        # TODO: rewrite functions to eval detection
-        # def _print_detection_eval_metrics(self, coco_eval):
-        #     IoU_lo_thresh = 0.5
-        #     IoU_hi_thresh = 0.95
-        #
-        #     def _get_thr_ind(coco_eval, thr):
-        #         ind = np.where((coco_eval.params.iouThrs > thr - 1e-5) &
-        #                        (coco_eval.params.iouThrs < thr + 1e-5))[0][0]
-        #         iou_thr = coco_eval.params.iouThrs[ind]
-        #         assert np.isclose(iou_thr, thr)
-        #         return ind
-        #
-        #     ind_lo = _get_thr_ind(coco_eval, IoU_lo_thresh)
-        #     ind_hi = _get_thr_ind(coco_eval, IoU_hi_thresh)
-        #     # precision has dims (iou, recall, cls, area range, max dets)
-        #     # area range index 0: all area ranges
-        #     # max dets index 2: 100 per image
-        #     precision = \
-        #         coco_eval.eval['precision'][ind_lo:(ind_hi + 1), :, :, 0, 2]
-        #     ap_default = np.mean(precision[precision > -1])
-        #     print(('~~~~ Mean and per-category AP @ IoU=[{:.2f},{:.2f}] '
-        #            '~~~~').format(IoU_lo_thresh, IoU_hi_thresh))
-        #     print('{:.1f}'.format(100 * ap_default))
-        #     for cls_ind, cls in enumerate(self.classes):
-        #         if cls == '__background__':
-        #             continue
-        #         # minus 1 because of __background__
-        #         precision = coco_eval.eval['precision'][ind_lo:(ind_hi + 
-        #         1), :, cls_ind - 1, 0, 2]
-        #         ap = np.mean(precision[precision > -1])
-        #         print('{:.1f}'.format(100 * ap))
-        #
-        #     print('~~~~ Summary metrics ~~~~')
-        #     coco_eval.summarize()
-        #
-        # def _do_detection_eval(self, res_file, output_dir):
-        #     ann_type = 'bbox'
-        #     coco_dt = self._COCO.loadRes(res_file)
-        #     coco_eval = COCOeval(self._COCO, coco_dt)
-        #     coco_eval.params.useSegm = (ann_type == 'segm')
-        #     coco_eval.evaluate()
-        #     coco_eval.accumulate()
-        #     self._print_detection_eval_metrics(coco_eval)
-        #     eval_file = osp.join(output_dir, 'detection_results.pkl')
-        #     with open(eval_file, 'wb') as fid:
-        #         pickle.dump(coco_eval, fid, pickle.HIGHEST_PROTOCOL)
-        #     print('Wrote COCO eval results to: {}'.format(eval_file))
-        #
-        # def _coco_results_one_category(self, boxes, cat_id):
-        #     results = []
-        #     for im_ind, index in enumerate(self.image_index):
-        #         dets = boxes[im_ind].astype(np.float)
-        #         if dets == []:
-        #             continue
-        #         scores = dets[:, -1]
-        #         xs = dets[:, 0]
-        #         ys = dets[:, 1]
-        #         ws = dets[:, 2] - xs + 1
-        #         hs = dets[:, 3] - ys + 1
-        #         results.extend(
-        #             [{'image_id': index,
-        #               'category_id': cat_id,
-        #               'bbox': [xs[k], ys[k], ws[k], hs[k]],
-        #               'score': scores[k]} for k in range(dets.shape[0])])
-        #     return results
-        #
-        # def _write_coco_results_file(self, all_boxes, res_file):
-        #     # [{"image_id": 42,
-        #     #   "category_id": 18,
-        #     #   "bbox": [258.15,41.29,348.26,243.78],
-        #     #   "score": 0.236}, ...]
-        #     results = []
-        #     for cls_ind, cls in enumerate(self.classes):
-        #         if cls == '__background__':
-        #             continue
-        #         print('Collecting {} results ({:d}/{:d})'.format(cls, cls_ind,
-        #                                                          self.num_classes - 1))
-        #         coco_cat_id = self._class_to_coco_cat_id[cls]
-        #         results.extend(self._coco_results_one_category(all_boxes[
-        #         cls_ind],
-        #                                                        coco_cat_id))
-        #     print('Writing results json to {}'.format(res_file))
-        #     with open(res_file, 'w') as fid:
-        #         json.dump(results, fid)
-        #
-        # def evaluate_detections(self, all_boxes, output_dir):
-        #     res_file = osp.join(output_dir, ('detections_' +
-        #                                      self._image_set +
-        #                                      self._year +
-        #                                      '_results'))
-        #     if self.config['use_salt']:
-        #         res_file += '_{}'.format(str(uuid.uuid4()))
-        #     res_file += '.json'
-        #     self._write_coco_results_file(all_boxes, res_file)
-        #     # Only do evaluation on non-test sets
-        #     if self._image_set.find('test') == -1:
-        #         self._do_detection_eval(res_file, output_dir)
-        #     # Optionally cleanup results json file
-        #     if self.config['cleanup']:
-        #         os.remove(res_file)

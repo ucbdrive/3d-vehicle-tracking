@@ -93,7 +93,8 @@ def plot_depth(epoch, session, targets, inputs, outputs):
     plt.close()
 
 
-def plot_3D(epoch, session, cam_loc, targets, inputs, outputs):
+def plot_3D(epoch, session, cam_loc, targets, inputs, outputs, 
+            show_cam_loc=False, show_dist=False):
     fig = plt.figure(dpi=100)
     params = {'legend.fontsize': 'x-large',
               'figure.figsize': (15, 5), }
@@ -104,8 +105,6 @@ def plot_3D(epoch, session, cam_loc, targets, inputs, outputs):
     plt.rcParams.update(params)
     min_color = 0.5
     max_color = 1.0
-    show_cam_loc = False
-    show_dist = False
 
     cm_cam = truncate_colormap(cm.get_cmap('Purples'), min_color, max_color)
     cm_gt = truncate_colormap(cm.get_cmap('Greens'), min_color, max_color)

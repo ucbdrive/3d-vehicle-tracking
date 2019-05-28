@@ -117,8 +117,6 @@ def plot_3D_box_pd(info_gt, info_pd, args, session_name):
     if args.draw_2d or args.draw_3d: print("3D: {}".format(session_name))
 
     # Variables
-    cam_field_of_view_h = FOV_H
-    cam_near_clip = NEAR_CLIP
     fig, ax = plt.subplots(figsize=(5, 5), dpi=100)
 
     # set output video
@@ -212,9 +210,9 @@ def plot_3D_box_pd(info_gt, info_pd, args, session_name):
                                              cam_pose,
                                              line_color=color)
                 if args.draw_2d:
-                    text_pd = 'PD:{}° {}m'.format(
-                        int(alpha_pd / np.pi * 180),
-                        int(depth_pd))
+                    #text_pd = 'PD:{}° {}m'.format(
+                    #    int(alpha_pd / np.pi * 180),
+                    #    int(depth_pd))
                     cv2.rectangle(rawimg,
                                   (box_pd[0], box_pd[1]),
                                   (box_pd[2], box_pd[3]),
@@ -276,8 +274,6 @@ def plot_3D_box(info_gt, info_pd, args, session_name):
     if args.draw_2d or args.draw_3d: print("3D: {}".format(session_name))
 
     # Variables
-    cam_field_of_view_h = FOV_H
-    cam_near_clip = NEAR_CLIP
     fig, ax = plt.subplots(figsize=(5, 5), dpi=100)
 
     # set output video
@@ -415,9 +411,9 @@ def plot_3D_box(info_gt, info_pd, args, session_name):
                                                  cam_pose,
                                                  line_color=color)
                 if args.draw_2d:
-                    text_gt = 'GT:{}° {}m'.format(
-                        int(alpha_gt / np.pi * 180),
-                        int(depth_gt))
+                    #text_gt = 'GT:{}° {}m'.format(
+                    #    int(alpha_gt / np.pi * 180),
+                    #    int(depth_gt))
                     cv2.rectangle(rawimg,
                                   (box_gt[0], box_gt[1]),
                                   (box_gt[2], box_gt[3]),
@@ -426,9 +422,9 @@ def plot_3D_box(info_gt, info_pd, args, session_name):
                                    color[2] * 0.7),
                                   8)
                     if has_match:
-                        text_pd = 'PD:{}° {}m'.format(
-                            int(alpha_pd / np.pi * 180),
-                            int(depth_pd))
+                        #text_pd = 'PD:{}° {}m'.format(
+                        #    int(alpha_pd / np.pi * 180),
+                        #    int(depth_pd))
                         cv2.rectangle(rawimg,
                                       (box_pd[0], box_pd[1]),
                                       (box_pd[2], box_pd[3]),

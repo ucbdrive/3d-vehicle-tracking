@@ -182,7 +182,6 @@ class Dataset():
         for fidx, filename in enumerate(file_list):
             print(fidx, filename)
             dataset = bh.load_json(filename)
-            n_fr = len(dataset)
             data_label = {}
             for fr_idx, frame in enumerate(dataset):
                 img_name = os.path.join(
@@ -246,7 +245,6 @@ class Dataset():
         file_list = sorted(
             [n for n in os.listdir(DATASET.IM_PATH) if n.endswith('png')])
         data_label = {}
-        n_fr = len(file_list)
         for fidx, fname in enumerate(file_list):
             obj_dict = {}
             obj_dict['class'] = []
@@ -310,7 +308,6 @@ class Dataset():
             file_list = sorted(
                 [sf for sf in os.listdir(seq_fname) if sf.endswith('.png')])
             data_label = {}
-            n_fr = len(file_list)
             for fr, fname in enumerate(file_list):
                 # relative position from frame 0
                 position = poses[fr].position - poses[0].position

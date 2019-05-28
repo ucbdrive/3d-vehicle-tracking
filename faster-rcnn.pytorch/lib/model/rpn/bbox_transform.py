@@ -9,8 +9,6 @@
 # --------------------------------------------------------
 
 import torch
-import numpy as np
-import pdb
 
 
 def bbox_transform(ex_rois, gt_rois):
@@ -134,7 +132,7 @@ def clip_boxes_batch(boxes, im_shape, batch_size):
     """
     Clip boxes to image boundaries.
     """
-    num_rois = boxes.size(1)
+    # num_rois = boxes.size(1)
 
     boxes[boxes < 0] = 0
     # batch_x = (im_shape[:,0]-1).view(batch_size, 1).expand(batch_size,

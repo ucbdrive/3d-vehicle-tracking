@@ -7,21 +7,16 @@ from __future__ import absolute_import
 # Written by Ross Girshick
 # --------------------------------------------------------
 
-import xml.dom.minidom as minidom
-
 import os
 # import PIL
 import numpy as np
 import scipy.sparse
 import subprocess
-import math
-import glob
 import uuid
 import scipy.io as sio
 import xml.etree.ElementTree as ET
 import pickle
 from .imdb import imdb
-from .imdb import ROOT_DIR
 from . import ds_utils
 from .voc_eval import voc_eval
 
@@ -238,7 +233,7 @@ class pascal_voc(imdb):
             y2 = float(bbox.find('ymax').text) - 1
 
             diffc = obj.find('difficult')
-            difficult = 0 if diffc == None else int(diffc.text)
+            difficult = 0 if diffc is None else int(diffc.text)
             ishards[ix] = difficult
 
             cls = self._class_to_ind[obj.find('name').text.lower().strip()]
@@ -347,7 +342,7 @@ class pascal_voc(imdb):
             .format(self._devkit_path, self._get_comp_id(),
                     self._image_set, output_dir)
         print('Running:\n{}'.format(cmd))
-        status = subprocess.call(cmd, shell=True)
+        _ = subprocess.call(cmd, shell=True)
 
     def evaluate_detections(self, all_boxes, output_dir):
         self._write_voc_results_file(all_boxes)

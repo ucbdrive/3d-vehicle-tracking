@@ -12,14 +12,12 @@ from __future__ import absolute_import
 import torch
 import torch.nn as nn
 import numpy as np
-import numpy.random as npr
 
 from model.utils.config import cfg
 from .generate_anchors import generate_anchors
-from .bbox_transform import clip_boxes, bbox_overlaps_batch, \
+from .bbox_transform import bbox_overlaps_batch, \
     bbox_transform_batch
 
-import pdb
 
 DEBUG = False
 
@@ -60,7 +58,7 @@ class _AnchorTargetLayer(nn.Module):
         rpn_cls_score = input[0]
         gt_boxes = input[1]
         im_info = input[2]
-        num_boxes = input[3]
+        #num_boxes = input[3]
 
         # map of shape (..., H, W)
         height, width = rpn_cls_score.size(2), rpn_cls_score.size(3)

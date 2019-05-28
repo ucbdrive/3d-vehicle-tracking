@@ -6,17 +6,12 @@ from __future__ import division
 from __future__ import print_function
 
 import torch.utils.data as data
-from PIL import Image
 import torch
 
 from model.utils.config import cfg
 from roi_data_layer.minibatch import get_minibatch
-from model.rpn.bbox_transform import bbox_transform_inv, clip_boxes
 
 import numpy as np
-import random
-import time
-import pdb
 
 
 class roibatchLoader(data.Dataset):
@@ -173,7 +168,7 @@ class roibatchLoader(data.Dataset):
             if ratio < 1:
                 assert cfg.DATASET != 'gta', 'should not be called for GTA'
                 # this means that data_width < data_height
-                trim_size = int(np.floor(data_width / ratio))
+                #trim_size = int(np.floor(data_width / ratio))
 
                 padding_data = torch.FloatTensor(
                     int(np.ceil(data_width / ratio)), \
@@ -195,8 +190,8 @@ class roibatchLoader(data.Dataset):
             else:
                 assert cfg.DATASET != 'gta', 'should not be called for GTA'
                 trim_size = min(data_height, data_width)
-                padding_data = torch.FloatTensor(trim_size, trim_size,
-                                                 3).zero_()
+                #padding_data = torch.FloatTensor(trim_size, trim_size,
+                #                                 3).zero_()
                 padding_data = data[0][:trim_size, :trim_size, :]
                 # gt_boxes.clamp_(0, trim_size)
                 gt_boxes[:, :4].clamp_(0, trim_size)

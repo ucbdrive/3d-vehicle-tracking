@@ -13,7 +13,6 @@ from torch.utils.data import Dataset, DataLoader
 
 import tracking_utils as tu
 import network_utils as nu
-from utils.config import cfg
 from plot_utils import plot_3D
 from model.motion_model import LSTM
 from model.tracker_model import KalmanBox3dTracker
@@ -226,7 +225,7 @@ class Dataset(Dataset):
         # Padding
         valid_mask = np.zeros(seq_len)
         valid_mask[:np.sum(rois[:, 4] > 0)] = 1
-        rois = np.vstack([rois, np.zeros([seq_len, 5])])[:seq_len]
+        #rois = np.vstack([rois, np.zeros([seq_len, 5])])[:seq_len]
         feat = np.vstack([feat, np.zeros([seq_len, 128])])[:seq_len]
         # feat = np.vstack([feat, np.zeros([seq_len, 128, 7, 7])])[:seq_len]
         objs_pd = np.vstack([objs_pd, np.zeros([self.seq_len, 3])])[
@@ -405,20 +404,10 @@ def train(args):
             for iters, traj_out in enumerate(iter(train_loader)):
 
                 # Initial
-                inputs = traj_out['inputs'].to(args.device)
                 loc_gt = traj_out['loc_gt'].to(args.device)[:, 1:]
                 loc_obs = 0.05 *traj_out['loc_pd'].to(args.device) + \
                             0.95 * traj_out['loc_gt'].to(args.device)
-                depth_gt = traj_out['depth_gt'].to(args.device)
-                depth_pd = traj_out['depth_pd'].to(args.device)
-                alpha_gt = traj_out['alpha_gt'].to(args.device)
-                alpha_pd = traj_out['alpha_pd'].to(args.device)
-                cen_gt = traj_out['cen_gt'].to(args.device)
-                cen_pd = traj_out['cen_pd'].to(args.device)
-                dim_gt = traj_out['dim_gt'].to(args.device)
-                dim_pd = traj_out['dim_pd'].to(args.device)
                 cam_loc = traj_out['cam_loc'].to(args.device)
-                cam_rot = traj_out['cam_rot'].to(args.device)
                 valid_mask = traj_out['valid_mask'].to(args.device)
 
                 loc_preds = []
@@ -607,19 +596,9 @@ def test(args):
         for iters, traj_out in enumerate(iter(test_loader)):
 
             # Initial
-            inputs = traj_out['inputs'].to(args.device)
             loc_gt = traj_out['loc_gt'].to(args.device)[:, 1:]
             loc_obs = traj_out['loc_pd'].to(args.device)
-            depth_gt = traj_out['depth_gt'].to(args.device)
-            depth_pd = traj_out['depth_pd'].to(args.device)
-            alpha_gt = traj_out['alpha_gt'].to(args.device)
-            alpha_pd = traj_out['alpha_pd'].to(args.device)
-            cen_gt = traj_out['cen_gt'].to(args.device)
-            cen_pd = traj_out['cen_pd'].to(args.device)
-            dim_gt = traj_out['dim_gt'].to(args.device)
-            dim_pd = traj_out['dim_pd'].to(args.device)
             cam_loc = traj_out['cam_loc'].to(args.device)
-            cam_rot = traj_out['cam_rot'].to(args.device)
             valid_mask = traj_out['valid_mask'].to(args.device)
 
             loc_preds = []

@@ -2,7 +2,6 @@ import argparse
 import numpy as np
 import os
 import pickle
-import re
 
 import utils.bdd_helper as bh
 from utils.config import cfg

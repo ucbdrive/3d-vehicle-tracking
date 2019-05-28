@@ -52,7 +52,7 @@ def compute_rot_loss(output, target_bin, target_res):
 
 
 def linear_motion_loss(outputs, mask):
-    batch_size = outputs.shape[0]
+    #batch_size = outputs.shape[0]
     s_len = outputs.shape[1]
 
     loss = outputs.new_zeros(1)

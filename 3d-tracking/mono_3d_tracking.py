@@ -6,12 +6,10 @@ import os
 import pickle
 import time
 
-import numpy as np
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
 import utils.tracking_utils as tu
-from pymot import MOTEvaluation
 from model.tracker_2d import Tracker2D
 from model.tracker_3d import Tracker3D
 from tools.eval_mot_bdd import TrackEvaluation

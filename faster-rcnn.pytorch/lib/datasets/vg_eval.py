@@ -5,8 +5,6 @@ from __future__ import absolute_import
 # Written by Bharath Hariharan
 # --------------------------------------------------------
 
-import xml.etree.ElementTree as ET
-import os
 import numpy as np
 from .voc_eval import voc_ap
 

@@ -4,7 +4,6 @@ import json
 import os
 import sys
 import urllib
-from collections import Iterable
 from multiprocessing import Pool
 from os.path import exists, splitext, isdir, join, split, dirname
 

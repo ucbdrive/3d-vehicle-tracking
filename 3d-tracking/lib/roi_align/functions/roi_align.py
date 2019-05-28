@@ -1,7 +1,5 @@
 from torch.autograd import Function
 
-import torch
-
 from .._ext import roi_align
 
 

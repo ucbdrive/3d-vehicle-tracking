@@ -15,7 +15,6 @@ import numpy.random as npr
 from scipy.misc import imread
 from model.utils.config import cfg
 from model.utils.blob import prep_im_for_blob, im_list_to_blob
-import pdb
 
 
 def get_minibatch(roidb, num_classes, train=True):

@@ -12,10 +12,8 @@ from __future__ import absolute_import
 import torch
 import torch.nn as nn
 import numpy as np
-import numpy.random as npr
 from ..utils.config import cfg
 from .bbox_transform import bbox_overlaps_batch, bbox_transform_batch
-import pdb
 
 
 class _ProposalTargetLayer(nn.Module):
@@ -112,8 +110,8 @@ class _ProposalTargetLayer(nn.Module):
         assert ex_rois.size(2) == 4
         assert gt_rois.size(2) == 4
 
-        batch_size = ex_rois.size(0)
-        rois_per_image = ex_rois.size(1)
+        #batch_size = ex_rois.size(0)
+        #rois_per_image = ex_rois.size(1)
 
         targets = bbox_transform_batch(ex_rois, gt_rois)
 
@@ -147,8 +145,8 @@ class _ProposalTargetLayer(nn.Module):
         max_overlaps, gt_assignment = torch.max(overlaps, 2)
 
         batch_size = overlaps.size(0)
-        num_proposal = overlaps.size(1)
-        num_boxes_per_img = overlaps.size(2)
+        #num_proposal = overlaps.size(1)
+        #num_boxes_per_img = overlaps.size(2)
 
         offset = torch.arange(0, batch_size) * gt_boxes.size(1)
         offset = offset.view(-1, 1).type_as(gt_assignment) + gt_assignment

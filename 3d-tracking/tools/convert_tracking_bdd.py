@@ -1,12 +1,10 @@
 import os
 import sys
-import json
 import argparse
 import numpy as np
 
 import utils.bdd_helper as bh
 import utils.tracking_utils as tu
-from utils.config import cfg
 
 
 def parse_args():
@@ -72,7 +70,6 @@ def convert_app(det_seq, trk_seq, save_path):
         cam_calib = np.array(det_frm['intrinsics']['cali'])
         for det_idx, det_out in enumerate(det_frm['prediction']):
             depth_pd = det_out['box3d']['location'][2]
-            rot_y = det_out['box3d']['orientation']
 
             for td in trk_frm:
                 match = np.where(np.sum(bh.get_box2d_array([det_out]) == 

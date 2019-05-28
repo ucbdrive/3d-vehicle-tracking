@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 import pickle
 import argparse
 import numpy as np
@@ -106,7 +105,6 @@ def convert_app(det_placeholder, det_out):
             cen = det_out['center_pd'][match].reshape(2)
             alpha = det_out['alpha_pd'][match].reshape(1)
             dim = det_out['dim_pd'][match].reshape(3)
-            depth = depth_pd[match].reshape(1)
             orient = rot_y[match].reshape(1)
             loc = location[match].reshape(3)
 

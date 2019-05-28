@@ -5,7 +5,6 @@ import json
 import logging
 import sys
 
-import numpy as np
 from formatchecker import FormatChecker
 from importers import MOT_groundtruth_import
 from importers import MOT_hypo_import
@@ -554,8 +553,8 @@ class MOTEvaluation:
 
     def getRelativeStatistics(self):
         gt = self.total_groundtruths_
-        covered_ground_truths = self.groundtruth_ids_ & set(self.gt_map_.keys())
-        lonely_hypotheses = self.hypothesis_ids_ - set(self.hypo_map_.keys())
+        #covered_ground_truths = self.groundtruth_ids_ & set(self.gt_map_.keys())
+        #lonely_hypotheses = self.hypothesis_ids_ - set(self.hypo_map_.keys())
 
         return {
             "MOTA": self.getMOTA(),

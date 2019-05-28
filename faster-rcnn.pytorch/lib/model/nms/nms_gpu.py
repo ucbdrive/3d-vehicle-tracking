@@ -1,5 +1,4 @@
 from __future__ import absolute_import
-import torch
 from ._ext import nms
 
 

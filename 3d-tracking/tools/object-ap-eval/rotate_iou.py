@@ -313,7 +313,6 @@ def rotate_iou_gpu_eval(boxes, query_boxes, criterion=-1, device_id=0):
     Returns:
         [type]: [description]
     """
-    box_dtype = boxes.dtype
     boxes = boxes.astype(np.float32)
     query_boxes = query_boxes.astype(np.float32)
     N = boxes.shape[0]

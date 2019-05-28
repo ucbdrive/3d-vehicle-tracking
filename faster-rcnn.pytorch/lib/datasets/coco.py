@@ -11,18 +11,15 @@ from datasets.imdb import imdb
 import datasets.ds_utils as ds_utils
 from model.utils.config import cfg
 import os.path as osp
-import sys
 import os
 import numpy as np
 import scipy.sparse
-import scipy.io as sio
 import pickle
 import json
 import uuid
 # COCO API
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
-from pycocotools import mask as COCOmask
 
 
 class coco(imdb):
@@ -79,11 +76,6 @@ class coco(imdb):
         """
         image_ids = self._COCO.getImgIds()
         return image_ids
-
-    def _get_widths(self):
-        anns = self._COCO.loadImgs(self._image_index)
-        widths = [ann['width'] for ann in anns]
-        return widths
 
     def image_path_at(self, i):
         """

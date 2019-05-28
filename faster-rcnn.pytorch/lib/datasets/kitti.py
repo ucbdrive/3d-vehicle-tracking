@@ -7,7 +7,6 @@
 # --------------------------------------------------------
 
 import os
-import datasets.imdb as imdb
 import numpy as np
 import cv2
 import pickle as cPickle
@@ -65,7 +64,6 @@ class kitti(imdb):
         """
         Load the indexes listed in this dataset's image set file.
         """
-        import os
         imglist = sorted(glob(os.path.join(self._data_path, '*', '*.png')))
         to_del = []
         if self._image_set == 'training':
@@ -201,7 +199,6 @@ class kitti(imdb):
     def _do_python_eval(self, output_dir='output'):
         annopath = os.path.join(self._devkit_path, 'training/label_2',
                                 '{:s}.txt')
-        imageset = self._image_index
 
         cachedir = os.path.join(self._devkit_path, 'annotations_cache')
         aps = []

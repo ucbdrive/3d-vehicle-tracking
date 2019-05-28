@@ -9,17 +9,14 @@ from __future__ import absolute_import
 
 import os
 from datasets.imdb import imdb
-import datasets.ds_utils as ds_utils
 import xml.etree.ElementTree as ET
 import numpy as np
 import scipy.sparse
 import gzip
 import PIL
-import json
 from .vg_eval import vg_eval
 from model.utils.config import cfg
 import pickle
-import pdb
 
 try:
     xrange  # Python 2
@@ -278,21 +275,19 @@ class vg(imdb):
         gt_attributes = scipy.sparse.csr_matrix(gt_attributes)
 
         rels = tree.findall('relation')
-        num_rels = len(rels)
         gt_relations = set()  # Avoid duplicates
         for rel in rels:
             pred = rel.find('predicate').text
             if pred:  # One is empty
                 pred = pred.lower().strip()
                 if pred in self._relation_to_ind:
-                    try:
-                        triple = []
-                        triple.append(obj_dict[rel.find('subject_id').text])
-                        triple.append(self._relation_to_ind[pred])
-                        triple.append(obj_dict[rel.find('object_id').text])
-                        gt_relations.add(tuple(triple))
-                    except:
-                        pass  # Object not in dictionary
+                    sbj_id = obj_dict[rel.find('subject_id').text]
+                    prd_id = self._relation_to_ind[pred]
+                    obj_id = obj_dict[rel.find('object_id').text]
+                    # Object not in dictionary
+                    if sbj_id and prd_id and obj_id:
+                        triple = [sbj_id, prd_id, obj_id]
+                    gt_relations.add(tuple(triple))
         gt_relations = np.array(list(gt_relations), dtype=np.int32)
 
         return {'boxes': boxes,
@@ -424,7 +419,7 @@ class vg(imdb):
 
 
 if __name__ == '__main__':
-    d = vg('val')
+    d = vg('150-50-20', 'val')
     res = d.roidb
     from IPython import embed;
 

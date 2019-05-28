@@ -7,11 +7,8 @@ from model.faster_rcnn.faster_rcnn import _fasterRCNN
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.autograd import Variable
 import math
 import torch.utils.model_zoo as model_zoo
-import pdb
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']

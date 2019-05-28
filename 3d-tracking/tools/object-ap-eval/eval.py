@@ -40,7 +40,6 @@ def clean_data(gt_anno, dt_anno, current_class, difficulty):
         bbox = gt_anno["bbox"][i]
         gt_name = gt_anno["name"][i].lower()
         height = bbox[3] - bbox[1]
-        valid_class = -1
         if (gt_name == current_cls_name):
             valid_class = 1
         elif (current_cls_name == "Pedestrian".lower()
@@ -173,7 +172,7 @@ def compute_statistics_jit(overlaps,
     dt_alphas = dt_datas[:, 4]
     gt_alphas = gt_datas[:, 4]
     dt_bboxes = dt_datas[:, :4]
-    gt_bboxes = gt_datas[:, :4]
+    #gt_bboxes = gt_datas[:, :4]
 
     assigned_detection = [False] * det_size
     ignored_threshold = [False] * det_size
@@ -397,8 +396,8 @@ def calculate_iou_partly(gt_annos, dt_annos, metric, num_parts=500):
     overlaps = []
     example_idx = 0
     for j, num_part in enumerate(split_parts):
-        gt_annos_part = gt_annos[example_idx:example_idx + num_part]
-        dt_annos_part = dt_annos[example_idx:example_idx + num_part]
+        #gt_annos_part = gt_annos[example_idx:example_idx + num_part]
+        #dt_annos_part = dt_annos[example_idx:example_idx + num_part]
         gt_num_idx, dt_num_idx = 0, 0
         for i in range(num_part):
             gt_box_num = total_gt_num[example_idx + i]

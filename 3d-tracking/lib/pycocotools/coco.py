@@ -84,7 +84,7 @@ class COCO:
         self.catToImgs = {}
         self.imgs = {}
         self.cats = {}
-        if not annotation_file == None:
+        if not annotation_file is None:
             print('loading annotations into memory...')
             tic = time.time()
             dataset = json.load(open(annotation_file, 'r'))
@@ -169,7 +169,7 @@ class COCO:
             anns = anns if len(areaRng) == 0 else [ann for ann in anns if
                                                    ann['area'] > areaRng[0] and
                                                    ann['area'] < areaRng[1]]
-        if not iscrowd == None:
+        if not iscrowd is None:
             ids = [ann['id'] for ann in anns if ann['iscrowd'] == iscrowd]
         else:
             ids = [ann['id'] for ann in anns]

@@ -397,7 +397,7 @@ def convert_x_to_bbox(x, score=None):
     """
     w = np.sqrt(x[2] * x[3])
     h = x[2] / w
-    if (score == None):
+    if (score is None):
         return np.array([x[0] - w / 2., x[1] - h / 2., x[0] + w / 2.,
                          x[1] + h / 2.]).reshape((1, 4))
     else:

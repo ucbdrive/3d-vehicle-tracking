@@ -1,21 +1,14 @@
-import random
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-import torchvision.models as models
-from torch.autograd import Variable
-import numpy as np
 from model.utils.config import cfg
 from model.rpn.rpn import _RPN
 from model.roi_pooling.modules.roi_pool import _RoIPooling
 from model.roi_crop.modules.roi_crop import _RoICrop
 from model.roi_align.modules.roi_align import RoIAlignAvg
 from model.rpn.proposal_target_layer_cascade import _ProposalTargetLayer
-import time
-import pdb
-from model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, \
-    _affine_grid_gen, _affine_theta
+from model.utils.net_utils import _smooth_l1_loss, _affine_grid_gen
 
 
 class _fasterRCNN(nn.Module):
@@ -84,8 +77,6 @@ class _fasterRCNN(nn.Module):
         # do roi pooling based on predicted rois
 
         if cfg.POOLING_MODE == 'crop':
-            # pdb.set_trace()
-            # pooled_feat_anchor = _crop_pool_layer(base_feat, rois.view(-1, 5))
             grid_xy = _affine_grid_gen(rois.view(-1, 5), base_feat.size()[2:],
                                        self.grid_size)
             grid_yx = torch.stack(

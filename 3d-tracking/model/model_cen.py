@@ -108,7 +108,6 @@ class Model(nn.Module):
 
         # Get box info
         num_imgs = image.size(0)
-        batch_size = rois.size(1)
         n_gt_box = box_info['n_box'].cpu().numpy()
         n_pd_box = torch.sum(rois[:, :, 4] > 0, dim=1).cpu().numpy()
 

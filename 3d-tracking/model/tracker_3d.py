@@ -310,9 +310,9 @@ class Tracker3D:
 
                 if self.dataset == 'kitti':
                     loc_gt[:, 2] += data['dim_gt'][:, 0] / 2 
-                bbgt, depgt, ptsgt = tu.construct2dlayout(loc_gt, data['dim_gt'], valid_rots,
-                                                 self.cam_calib,
-                                                 self.cam_pose)
+                #bbgt, depgt, ptsgt = tu.construct2dlayout(loc_gt, data['dim_gt'], valid_rots,
+                #                                 self.cam_calib,
+                #                                 self.cam_pose)
                 for idx, (tid, boxgt, cengt) in enumerate(zip(data['tid_gt'], data['rois_gt'], data['center_gt'])):
                     detgt = boxgt.astype('int')
                     cengt = cengt.astype('int')
@@ -326,7 +326,7 @@ class Tracker3D:
                     #'''
 
             for idx, (det, detbox, detpo, cen) in enumerate(zip(dets, detboxes, detpoints, cens)):
-                det = det.astype('int')
+                #det = det.astype('int')
                 detbox = detbox.astype('int')
                 cen = cen.astype('int')
                 '''
@@ -407,7 +407,6 @@ class Tracker3D:
             res_cen = data['center_pd'][keep]
 
         gt_boxes = data['rois_gt']
-        num_boxes = len(gt_boxes)
         dim_gt = data['dim_gt']
         alpha_gt = data['alpha_gt']
         depth_gt = data['depth_gt']

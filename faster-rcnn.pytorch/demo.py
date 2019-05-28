@@ -13,28 +13,20 @@ import sys
 import numpy as np
 import argparse
 import pprint
-import pdb
 import time
 import cv2
 import torch
 from torch.autograd import Variable
-import torch.nn as nn
-import torch.optim as optim
 
-import torchvision.transforms as transforms
-import torchvision.datasets as dset
 from scipy.misc import imread
-from roi_data_layer.roidb import combined_roidb
-from roi_data_layer.roibatchLoader import roibatchLoader
-from model.utils.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
+from model.utils.config import cfg, cfg_from_file, cfg_from_list
 from model.rpn.bbox_transform import clip_boxes
 from model.nms.nms_wrapper import nms
 from model.rpn.bbox_transform import bbox_transform_inv
-from model.utils.net_utils import save_net, load_net, vis_detections
+from model.utils.net_utils import vis_detections
 from model.utils.blob import im_list_to_blob
 from model.faster_rcnn.vgg16 import vgg16
 from model.faster_rcnn.resnet import resnet
-import pdb
 
 try:
     xrange  # Python 2
@@ -193,8 +185,7 @@ if __name__ == '__main__':
         fasterRCNN = resnet(pascal_classes, 152, pretrained=False,
                             class_agnostic=args.class_agnostic)
     else:
-        print("network is not defined")
-        pdb.set_trace()
+        raise ValueError("network is not defined")
 
     fasterRCNN.create_architecture()
 
@@ -209,10 +200,6 @@ if __name__ == '__main__':
         cfg.POOLING_MODE = checkpoint['pooling_mode']
 
     print('load model successfully!')
-
-    # pdb.set_trace()
-
-    print("load checkpoint %s" % (load_name))
 
     # initilize the tensor holder here.
     im_data = torch.FloatTensor(1)
@@ -296,7 +283,6 @@ if __name__ == '__main__':
         gt_boxes.data.resize_(1, 1, 5).zero_()
         num_boxes.data.resize_(1).zero_()
 
-        # pdb.set_trace()
         det_tic = time.time()
 
         rois, cls_prob, bbox_pred, \

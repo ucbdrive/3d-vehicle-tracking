@@ -318,7 +318,7 @@ def compute_boxoverlap_with_depth_draw(det, detbox, detdepth, detdim,
         iou_2d[i] = compute_iou(trkdet[i], det)
         same_layer[i] = np.sum((abs(trkeddepths[i] - trkeddepths) < 1)) > 1
         valid_trkbox[i] = np.sum(before == (i+1)) + np.sum(after == (i+1))
-    trkedboxesarr = np.array(trkedboxes).astype('float')
+    #trkedboxesarr = np.array(trkedboxes).astype('float')
     overlap = overlap.astype('float')
 
     # Calculate the IOU
@@ -375,11 +375,6 @@ def computeboxes(roty, dim, loc):
         vertex: numpy array of shape (8, 3) for bbox vertex
     '''
     roty = roty[0]
-    face_idx = np.array([[1, 2, 6, 5],  # front face
-                         [2, 3, 7, 6],  # left face
-                         [3, 4, 8, 7],  # back face
-                         [4, 1, 5, 8],
-                         [1, 6, 5, 2]], dtype=np.int32) - 1  # right
     R = np.array([[+np.cos(roty), 0, +np.sin(roty)],
                   [0, 1, 0],
                   [-np.sin(roty), 0, +np.cos(roty)]])

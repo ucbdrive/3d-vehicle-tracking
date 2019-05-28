@@ -172,9 +172,9 @@ class Dataset(Dataset):
         cam_rot = np.array(frame['extrinsics']['rotation'])
         cam_loc = np.array(frame['extrinsics']['location'])
         cam_calib = np.array(frame['intrinsics']['cali'])
-        cam_focal = np.array(frame['intrinsics']['focal'])
-        cam_near_clip = np.array(frame['intrinsics']['nearClip'])
-        cam_fov_h = np.array(frame['intrinsics']['fov'])
+        #cam_focal = np.array(frame['intrinsics']['focal'])
+        #cam_near_clip = np.array(frame['intrinsics']['nearClip'])
+        #cam_fov_h = np.array(frame['intrinsics']['fov'])
         pose = tu.Pose(cam_loc, cam_rot, not self.use_kitti)
 
         # Object level annotations
