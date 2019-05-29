@@ -72,7 +72,8 @@ cd faster-rcnn.pytorch
 bash init.sh
 ```
 
-> NOTE: For [faster-rcnn-pytorch](3DTracking/lib/make.sh) compiling problems [[1](https://github.com/jwyang/faster-rcnn.pytorch/issues/235#issuecomment-409493006)], [[2](https://github.com/jwyang/faster-rcnn.pytorch/issues/190)], please use *PyTorch 0.4.0* and *CUDA 9.0* to compile.
+> NOTE: For [faster-rcnn-pytorch](faster-rcnn-pytorch/lib/make.sh) compiling problems 
+[[1](https://github.com/jwyang/faster-rcnn.pytorch/issues/235#issuecomment-409493006)], [[2](https://github.com/jwyang/faster-rcnn.pytorch/issues/190)], please use *PyTorch 0.4.0* and *CUDA 9.0* to compile.
 
 > NOTE: For [object-ap-eval](https://github.com/traveller59/kitti-object-eval-python#dependencies) compiling problem. It only supports python 3.6+, need `numpy`, `skimage`, `numba`, `fire`. If you have Anaconda, just install `cudatoolkit` in anaconda. Otherwise, please reference to this [page](https://github.com/numba/numba#custom-python-environments) to set up llvm and cuda for numba.
 
