@@ -1,5 +1,7 @@
 # Joint Monocular 3D Detection and Tracking
 
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/ucbdrive/3d-vehicle-tracking.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ucbdrive/3d-vehicle-tracking/context:python)
+
 ![](imgs/teaser.gif)
 
 We present a novel framework that jointly detects and tracks 3D vehicle bounding boxes.
@@ -108,7 +110,7 @@ cd 3d-tracking/
 
 # Step 00 - Data Preprocessing
 # Collect features into json files (check variables in the code)
-python loader/gen_pred.py gta val --is_pred
+python loader/gen_pred.py gta val
 
 # Step 01 - 3D Estimation
 # Running single task scripts mentioned below and training by yourself
@@ -116,7 +118,8 @@ python loader/gen_pred.py gta val --is_pred
 python run_estimation.py gta val --session 616 --epoch 030
 
 # Step 02 - 3D Tracking and Evaluation
-# 3D helps tracking part. For tracking evaluation, using multi-GPUs and multi-processes to run through all 100 sequences
+# 3D helps tracking part. For tracking evaluation, 
+# using multi-GPUs and multi-processes to run through all 100 sequences
 python run_tracking.py gta val --session 616 --epoch 030
 
 # Step 03 - 3D AP Evaluation
@@ -135,10 +138,11 @@ cd tools/object-ap-eval/
 python test_det_ap.py gta val --session 616 --epoch 030
 ```
 
-## License
-Third-party datasets and tools are subject to their respective licenses.
+> Note: If facing `ModuleNotFoundError: No module named 'utils'` problem, please add `PYTHONPATH=.` before `python {scripts} {arguments}`.
 
-If you use our code/models in your research, please cite our paper:
+
+## Citation
+If you find our code/models useful in your research, please cite our paper:
 ```
 @article{HuMono3DT2018,
   title={Joint Monocular 3D Vehicle Detection and Tracking},
@@ -148,6 +152,10 @@ If you use our code/models in your research, please cite our paper:
   year={2018}
 }
 ```
+
+## License
+This work is licensed under BSD 3-Clause License. See [LICENSE](LICENSE) for details. 
+Third-party datasets and tools are subject to their respective licenses.
 
 ## Acknowledgements
 We thank [faster.rcnn.pytorch](https://github.com/jwyang/faster-rcnn.pytorch) for the detection codebase, [pymot](https://github.com/Videmo/pymot) for their MOT evaluation tool and [kitti-object-eval-python](https://github.com/traveller59/kitti-object-eval-python) for the 3D AP calculation tool.

@@ -64,19 +64,18 @@ python loader/download.py checkpoint
 - Installation and dataset preparation are both finished
 - Given object proposal bounding boxes and 3D center from faster-rcnn.pytorch directory
 
-For running a whole pipeline (2D proposals, 3D estimation and tracking):
+For running a whole pipeline (3D estimation and tracking):
 ```bash
 # Step 00 - Data Preprocessing
 # Collect features into json files (check variables in the code)
-python loader/gen_pred.py gta val --is_pred
+python loader/gen_pred.py gta val 
 
 # And similarly,
-python loader/gen_pred.py gta train
-python loader/gen_pred.py gta test --is_pred
+python loader/gen_pred.py gta test
 
 # For KITTI, it's the same procedure
-python loader/gen_dataset.py kitti train --is_pred
-python loader/gen_pred.py kitti train --is_pred
+python loader/gen_dataset.py kitti train
+python loader/gen_pred.py kitti train
 
 # Step 01 - 3D Estimation
 # Running single task scripts mentioned below and training by yourself
@@ -84,7 +83,8 @@ python loader/gen_pred.py kitti train --is_pred
 python run_estimation.py gta val --session 616 --epoch 030
 
 # Step 02 - 3D Tracking and Evaluation
-# 3D helps tracking part. For tracking evaluation, using multi-GPUs and multi-processes to run through all 100 sequences
+# 3D helps tracking part. For tracking evaluation, 
+# using multi-GPUs and multi-processes to run through all 100 sequences
 python run_tracking.py gta val --session 616 --epoch 030
 
 # Step 03 - 3D AP Evaluation
@@ -103,6 +103,8 @@ cd tools/object-ap-eval/
 python test_det_ap.py gta val --session 616 --epoch 030
 ```
 
+> Note: If facing `ModuleNotFoundError: No module named 'utils'` problem, please add `PYTHONPATH=.` before `python {scripts} {arguments}`.
+
 
 For running a whole pipeline of 3D estimation (training and testing):
 ```bash
@@ -117,6 +119,7 @@ bash scripts/test_gta.sh
 ```
 
 ## License
+This work is licensed under BSD 3-Clause License. See [LICENSE](../LICENSE) for details. 
 Third-party datasets and tools are subject to their respective licenses.
 
 If you use our code/models in your research, please cite our paper:
