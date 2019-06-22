@@ -101,10 +101,10 @@ class Dataset():
         self.data_path = load_label_path(DATASET.LABEL_PATH, pattern)
 
         # Load detection
-        if os.path.isfile(det_name):
-            with open(det_name, 'rb') as f:
-                det_result = pickle.load(f)
-            self.det_result = np.array(det_result[1])
+        assert os.path.isfile(det_name), 'File not found: {}'.format(det_name)
+        with open(det_name, 'rb') as f:
+            det_result = pickle.load(f)
+        self.det_result = np.array(det_result[1])
 
         # Assertion
         assert len(self.data_path) == self.det_result.shape[0], \
