@@ -18,9 +18,10 @@ obtain stable 3D estimation.
 [Trevor Darrell](https://people.eecs.berkeley.edu/~trevor/), 
 [Fisher Yu](https://www.yf.io/).
 <br/>
-In *arXiv*, 2018.
+In ICCV, 2019.
 
 [Paper](https://arxiv.org/abs/1811.10742)
+[Website](https://eborboihuc.github.io/Mono-3DT/)
 
 
 ## Quick start
@@ -47,12 +48,11 @@ Third-party datasets are subject to their respective licenses.
 
 If you use our code/models in your research, please cite our paper:
 ```
-@article{HuMono3DT2018,
-  title={Joint Monocular 3D Vehicle Detection and Tracking},
-  author={Hu, Hou-Ning and Cai, Qi-Zhi and Wang, Dequan and Lin, Ji and Sun, Min and Krähenbühl, Philipp and Darrell, Trevor and Yu, Fisher},
-  journal={arXiv},
-  volume={abs/1811.10742},
-  year={2018}
+@inproceedings{Hu3DT19,
+author = {Hu, Hou-Ning and Cai, Qi-Zhi and Wang, Dequan and Lin, Ji and Sun, Min and Krähenbühl, Philipp and Darrell, Trevor and Yu, Fisher},
+title = {Joint Monocular 3D Detection and Tracking},
+journal = {ICCV},
+year = {2019}
 }
 ```
 
