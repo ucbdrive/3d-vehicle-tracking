@@ -1,4 +1,4 @@
-# Joint Monocular 3D Detection and Tracking
+# Joint Monocular 3D Vehicle Detection and Tracking
 
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/ucbdrive/3d-vehicle-tracking.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ucbdrive/3d-vehicle-tracking/context:python)
 
@@ -146,7 +146,7 @@ If you find our code/models useful in your research, please cite our paper:
 ```
 @inproceedings{Hu3DT19,
 author = {Hu, Hou-Ning and Cai, Qi-Zhi and Wang, Dequan and Lin, Ji and Sun, Min and Krähenbühl, Philipp and Darrell, Trevor and Yu, Fisher},
-title = {Joint Monocular 3D Detection and Tracking},
+title = {Joint Monocular 3D Vehicle Detection and Tracking},
 journal = {ICCV},
 year = {2019}
 }

@@ -1,4 +1,4 @@
-# Joint Monocular 3D Detection and Tracking
+# Joint Monocular 3D Vehicle Detection and Tracking
 
 ![](../imgs/teaser.gif)
 
@@ -127,7 +127,7 @@ If you use our code/models in your research, please cite our paper:
 ```
 @inproceedings{Hu3DT19,
 author = {Hu, Hou-Ning and Cai, Qi-Zhi and Wang, Dequan and Lin, Ji and Sun, Min and Krähenbühl, Philipp and Darrell, Trevor and Yu, Fisher},
-title = {Joint Monocular 3D Detection and Tracking},
+title = {Joint Monocular 3D Vehicle Detection and Tracking},
 journal = {ICCV},
 year = {2019}
 }
