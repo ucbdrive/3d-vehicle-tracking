@@ -10,7 +10,7 @@ _DATA_KITTI_D=${_PWD}'/../3d-tracking/data/kitti_object/'
 
 # make .so files
 cd lib/
-./make.sh
+python setup.py build develop
 cd ${_PWD}
 
 # download pretrain model

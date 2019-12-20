@@ -24,14 +24,14 @@ mkdir 'checkpoint'
 mkdir 'output'
 mkdir -p 'output/gta5_tracking/val/pred'
 mkdir -p 'output/gta5_tracking/test/pred'
+mkdir -p 'output/gta5_tracking/train/pred'
 mkdir -p 'output/kitti_tracking/testing/pred_02'
 mkdir -p 'output/kitti_object/testing/pred_02'
-mkdir -p 'output/gta5_tracking/train/pred'
 mkdir -p 'output/kitti_tracking/training/pred_02'
 mkdir -p 'output/kitti_object/training/pred_02'
 
 # Make .so files
 cd $ROOT/lib
-bash make.sh
+python setup.py build develop
 cd $ROOT
 
