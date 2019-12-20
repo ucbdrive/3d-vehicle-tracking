@@ -122,11 +122,53 @@ def read_calib(seq_idx, calib_dir='cali', cam=2):
               open(os.path.join(calib_dir, '{:04d}.txt'.format(seq_idx)))]
     return np.asarray(fields[cam][1:], dtype=np.float32).reshape(3, 4)
 
-def point3dcoord_torch(point, depth, projection, position, rotation):
-    corners = projection[:, 0:3].inverse().mm(
-        torch.cat([point, point.new_ones((1, point.shape[1]))]))
-    assert abs(corners[2, 0] - 1) < 0.01
-    corners_global = rotation.mm(corners * depth).view(3, -1) + position
+def point3dcoord_torch(points, depths, projection, position, rotation):
+    """
+    project point to 3D world coordinate
+
+    point: (N, 2), N points on X-Y image plane
+    projection: (3, 4), projection matrix
+    position:  (3), translation of world coordinates
+    rotation:  (3, 3), rotation along camera coordinates
+
+    corners_global: (N, 3), N points on X(right)-Y(front)-Z(up) world coordinate (GTA)
+                    or X(front)-Y(left)-Z(up) velodyne coordinates (KITTI)
+    """
+    assert points.shape[1] == 2, (
+        "Shape ({}) not fit".format(points.shape))
+    corners = imagetocamera_torch(points, depths, projection)
+    corners_global = cameratoworld_torch(corners, position, rotation)
+    return corners_global
+
+def imagetocamera_torch(points, depths, projection):
+    """
+    points: (N, 2), N points on X-Y image plane
+    depths: (N,), N depth values for points
+    projection: (3, 4), projection matrix
+
+    corners: (N, 3), N points on X(right)-Y(down)-Z(front) camera coordinate
+    """
+    assert points.shape[1] == 2, "Shape ({}) not fit".format(points.shape)
+    corners = torch.cat([points, points.new_ones((points.shape[0], 1))], dim=1).mm(
+                projection[:, 0:3].inverse().t())
+    assert torch.all(abs(corners[:, 2] - 1) < 0.01)
+    corners_cam = corners * depths.view(-1, 1)
+
+    return corners_cam
+
+def cameratoworld_torch(corners, position, rotation):
+    """
+    corners: (N, 3), N points on X(right)-Y(down)-Z(front) camera coordinate
+    pose: a class with position, rotation of the frame
+        rotation:  (3, 3), rotation along camera coordinates
+        position:  (3), translation of world coordinates
+
+    corners_global: (N, 3), N points on X(right)-Y(front)-Z(up) world coordinate (GTA)
+                    or X(front)-Y(left)-Z(up) velodyne coordinates (KITTI)
+    """
+    assert corners.shape[1] == 3, (
+        "Shape ({}) not fit".format(corners.shape))
+    corners_global = corners.mm(rotation.t()) + position
     return corners_global
 
 
@@ -148,7 +190,6 @@ def point3dcoord(points, depths, projection, pose):
     corners = imagetocamera(points, depths, projection)
     corners_global = cameratoworld(corners, pose)
     return corners_global
-
 
 def boxto3dcoord(box, depth, projection, pose):
     """
@@ -797,8 +838,8 @@ def rot_y2alpha(rot_y, x, FOCAL_LENGTH):
     x : Object center x to the camera center (x-W/2), in pixels
     alpha : Observation angle of object, ranging [-pi..pi]
     """
-    alpha = rad2deg(rot_y - np.arctan2(x, FOCAL_LENGTH)) + 180
-    alpha = alpha % 360 - 180
+    alpha = rot_y - np.arctan2(x, FOCAL_LENGTH)
+    alpha = alpha % (2*np.pi) - np.pi
     return alpha
 
 @numba.jit()
@@ -809,8 +850,8 @@ def alpha2rot_y(alpha, x, FOCAL_LENGTH):
     x : Object center x to the camera center (x-W/2), in pixels
     rotation_y : Rotation ry around Y-axis in camera coordinates [-pi..pi]
     """
-    rot_y = rad2deg(alpha + np.arctan2(x, FOCAL_LENGTH)) - 180
-    rot_y = rot_y % 360 - 180
+    rot_y = alpha + np.arctan2(x, FOCAL_LENGTH)
+    rot_y = rot_y % (2*np.pi) - np.pi
     return rot_y
 
 

@@ -313,10 +313,10 @@ class Tracker2D:
         valid_rots = np.zeros_like(valid_alpha)
         for idx, (alpha, det, center) in enumerate(
                         zip(valid_alpha, valid_bbox, valid_cen)):
-            valid_rots[idx] = tu.deg2rad(tu.alpha2rot_y(
+            valid_rots[idx] = tu.alpha2rot_y(
                                     alpha, 
-                                    center[0] - self.W//2, #cam_calib[0][2],
-                                    FOCAL_LENGTH=self.cam_calib[0][0]))
+                                    center[0] - self.W//2,
+                                    FOCAL_LENGTH=self.cam_calib[0][0])
 
         # now build the world 3d coordinate
         valid_worldcoords = tu.point3dcoord(valid_cen, valid_depth, self.cam_calib, self.cam_pose)

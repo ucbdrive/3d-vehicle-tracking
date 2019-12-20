@@ -302,10 +302,10 @@ class Tracker3D:
                 valid_rots = np.zeros_like(data['alpha_gt'])[:, np.newaxis]
                 for idx, (alpha, det, center) in enumerate(
                                 zip(data['alpha_gt'], data['rois_gt'], data['center_gt'])):
-                    valid_rots[idx] = tu.deg2rad(tu.alpha2rot_y(
+                    valid_rots[idx] = tu.alpha2rot_y(
                                             alpha, 
-                                            center[0] - self.W//2, #cam_calib[0][2],
-                                            FOCAL_LENGTH=self.cam_calib[0][0]))
+                                            center[0] - self.W//2,
+                                            FOCAL_LENGTH=self.cam_calib[0][0])
                 loc_gt = tu.point3dcoord(data['center_gt'], data['depth_gt'], self.cam_calib, self.cam_pose)
 
                 if self.dataset == 'kitti':
@@ -479,10 +479,10 @@ class Tracker3D:
         valid_rots = np.zeros_like(valid_alpha)
         for idx, (alpha, det, center) in enumerate(
                         zip(valid_alpha, valid_bbox, valid_cen)):
-            valid_rots[idx] = tu.deg2rad(tu.alpha2rot_y(
+            valid_rots[idx] = tu.alpha2rot_y(
                                     alpha, 
-                                    center[0] - self.W//2, #cam_calib[0][2],
-                                    FOCAL_LENGTH=self.cam_calib[0][0]))
+                                    center[0] - self.W//2,
+                                    FOCAL_LENGTH=self.cam_calib[0][0])
 
         # NOTE: pre-processing for RRC detection
         if len(valid_bbox) > 0 and _center:

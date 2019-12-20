@@ -79,10 +79,9 @@ def convert_app(det_placeholder, det_out):
 
     if len(det_out['rois_pd']):
         depth_pd = det_out['depth_pd'].copy()
-        rot_y = tu.deg2rad(
-            tu.alpha2rot_y(det_out['alpha_pd'],
+        rot_y = tu.alpha2rot_y(det_out['alpha_pd'],
                            det_out['center_pd'][:, 0] - cfg.GTA.W // 2,
-                           cfg.GTA.FOCAL_LENGTH))
+                           cfg.GTA.FOCAL_LENGTH)
         # In camera coordinates
         location = tu.imagetocamera(det_out['center_pd'],
                             depth_pd,

@@ -179,11 +179,9 @@ def plot_3D_box_pd(info_gt, info_pd, args, session_name):
                 center_pd = np.hstack(
                     [(xc_pd - W // 2) * depth_pd / FOCAL_LENGTH, depth_pd])
 
-                rot_y_pd = tu.deg2rad(
-                    tu.alpha2rot_y(alpha_pd,
+                rot_y_pd = tu.alpha2rot_y(alpha_pd,
                                    xc_pd - W // 2,
                                    FOCAL_LENGTH)
-                )  # rad
 
                 vol_box_pd = get_3d_box_from_2d(
                     np.array([[xc_pd, yc_pd]]),
@@ -336,11 +334,9 @@ def plot_3D_box(info_gt, info_pd, args, session_name):
                 center_gt = np.hstack(
                     [(xc_gt - W // 2) * depth_gt / FOCAL_LENGTH, depth_gt])
 
-                rot_y_gt = tu.deg2rad(
-                    tu.alpha2rot_y(alpha_gt,
+                rot_y_gt = tu.alpha2rot_y(alpha_gt,
                                    xc_gt - W // 2,
                                    FOCAL_LENGTH)
-                )  # degree
 
                 vol_box_gt = get_3d_box_from_2d(
                     np.array([[xc_gt, yc_gt]]),
@@ -372,11 +368,9 @@ def plot_3D_box(info_gt, info_pd, args, session_name):
                     center_pd = np.hstack(
                         [(xc_pd - W // 2) * depth_pd / FOCAL_LENGTH, depth_pd])
 
-                    rot_y_pd = tu.deg2rad(
-                        tu.alpha2rot_y(alpha_pd,
+                    rot_y_pd = tu.alpha2rot_y(alpha_pd,
                                        xc_pd - W // 2,
                                        FOCAL_LENGTH)
-                    )  # rad
 
                     vol_box_pd = get_3d_box_from_2d(
                         np.array([[xc_pd, yc_pd]]),
