@@ -5,8 +5,7 @@ import torch.nn as nn
 import utils.network_utils as nu
 import utils.tracking_utils as tu
 from model import dla_up
-from lib.roi_align.modules.roi_align import RoIAlignAvg
-from lib.roi_pooling.modules.roi_pool import RoIPooling
+from lib.model.roi_layers import ROIAlign, ROIPool
 
 
 class Model(nn.Module):
@@ -24,11 +23,15 @@ class Model(nn.Module):
 
         if 'align' in roi_name:
             print('Using RoIAlign')
-            self.roi_pool = RoIAlignAvg(roi_kernel, roi_kernel,
-                                        1.0 / down_ratio)
+            self.roi_pool = ROIAlign(
+                                    (roi_kernel, roi_kernel), 
+                                    1.0 / down_ratio, 
+                                    0)
         elif 'pool' in roi_name:
             print('Using RoIPool')
-            self.roi_pool = RoIPooling(roi_kernel, roi_kernel, 1.0 / down_ratio)
+            self.roi_pool = ROIPool(
+                                    (roi_kernel, roi_kernel), 
+                                    1.0 / down_ratio)
 
         self.dim = nn.Sequential(
             nn.Conv2d(num_channel, num_channel,
@@ -190,10 +193,9 @@ class Model(nn.Module):
         img_feat = self.base(image)
         if num_det > 0:
             pooled_feat = self.roi_pool(img_feat, boxes)
-
-            dim = self.dim(pooled_feat).view(-1, 3)
-            cen = self.cen(pooled_feat).view(-1, 2) + cen_pd
-            orient_ = self.rot(pooled_feat).view(-1, 8)
+            dim = self.dim(pooled_feat).flatten(start_dim=1)
+            cen = self.cen(pooled_feat).flatten(start_dim=1) + cen_pd
+            orient_ = self.rot(pooled_feat).flatten(start_dim=1)
             # bin 1
             divider1 = torch.sqrt(orient_[:, 2:3] ** 2 + orient_[:, 3:4] ** 2)
             b1sin = orient_[:, 2:3] / divider1
@@ -207,22 +209,22 @@ class Model(nn.Module):
             rot = torch.cat(
                 [orient_[:, 0:2], b1sin, b1cos, orient_[:, 4:6], b2sin, b2cos],
                 1)
-            dep = nu.get_pred_depth(self.dep(pooled_feat).view(-1))
+            dep = nu.get_pred_depth(self.dep(pooled_feat).flatten())
 
             loc_pd = []
             sum_l = 0
             for l_idx in range(num_imgs):
                 if n_pd_box[l_idx] == 0:
                     continue
-                cam_calib = box_info['cam_calib'][l_idx].view(3, 4)
-                position = box_info['cam_loc'][l_idx].view(3, 1)
-                rotation = box_info['cam_rot'][l_idx].view(3, 3)
+                cam_calib = box_info['cam_calib'][l_idx]
+                position = box_info['cam_loc'][l_idx]
+                rotation = box_info['cam_rot'][l_idx]
                 loc_pd.append(tu.point3dcoord_torch(
-                    cen[sum_l:sum_l + n_pd_box[l_idx]].view(2, -1),
-                    dep[sum_l:sum_l + n_pd_box[l_idx]].view(1, -1),
+                    cen[sum_l:sum_l + n_pd_box[l_idx]],
+                    dep[sum_l:sum_l + n_pd_box[l_idx]],
                     cam_calib, 
                     position,
-                    rotation).view(-1, 3))
+                    rotation))
                 sum_l += n_pd_box[l_idx]
             loc_pd = torch.cat(loc_pd)
         else:

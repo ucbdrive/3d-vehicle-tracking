@@ -28,9 +28,16 @@ In ICCV, 2019.
 ## Prerequisites
 
 - Linux (tested on Ubuntu 16.04.4 LTS)
-- Python 3.6 (tested on 3.6.4)
-- PyTorch 0.4.1 (tested on 0.4.1 for execution)
-- nvcc 9.0 (9.0.176 compiling and execution tested, 9.2.88 execution only)
+- Python 3.6.9
+    - `3.6.4` tested
+    - `3.6.9` tested
+- PyTorch 1.3.1 
+    - `1.0.0` (with CUDA 9.0, torchvision 0.2.1)
+    - `1.1.0` (with CUDA 9.0, torchvision 0.3.0)
+    - `1.3.1` (with CUDA 10.1, torchvision 0.4.2)
+- nvcc 10.1
+    - `9.0.176`, `10.1` compiling and execution tested
+    - `9.2.88` execution only
 - gcc 5.4.0
 - Pyenv or Anaconda
 
@@ -43,11 +50,11 @@ For more detailed instructions, please refer to [`DOCUMENTATION.md`](3d-tracking
 ### Installation
 - Clone this repo:
 ```bash
-git clone -b master --single-branch https://github.com/ucbdrive/3d-vehicle-tracking.git
+git clone -b pytorch1.0 --single-branch https://github.com/ucbdrive/3d-vehicle-tracking.git
 cd 3d-vehicle-tracking/
 ```
 
-- Install PyTorch 0.4.1+ and torchvision from http://pytorch.org and other dependencies. You can create a virtual environment by the following:
+- Install PyTorch 1.0.0+ and torchvision from http://pytorch.org and other dependencies. You can create a virtual environment by the following:
 ```bash
 # Add path to bashrc 
 echo -e '\nexport PYENV_ROOT="$HOME/.pyenv"\nexport PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
@@ -60,8 +67,8 @@ curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv
 exec $SHELL
 
 # Install and activate Python in pyenv
-pyenv install 3.6.4
-pyenv local 3.6.4
+pyenv install 3.6.9
+pyenv local 3.6.9
 ```
 
 - Install requirements, create folders and compile binaries for detection
@@ -74,8 +81,8 @@ cd faster-rcnn.pytorch
 bash init.sh
 ```
 
-> NOTE: For [faster-rcnn-pytorch](faster-rcnn-pytorch/lib/make.sh) compiling problems 
-[[1](https://github.com/jwyang/faster-rcnn.pytorch/issues/235#issuecomment-409493006)], [[2](https://github.com/jwyang/faster-rcnn.pytorch/issues/190)], please use *PyTorch 0.4.0* and *CUDA 9.0* to compile.
+> NOTE: For [faster-rcnn-pytorch](faster-rcnn-pytorch/lib/setup.py) compiling problems 
+[[1](https://github.com/jwyang/faster-rcnn.pytorch/issues/410#issuecomment-450709668)], please compile COCO API and replace pycocotools.
 
 > NOTE: For [object-ap-eval](https://github.com/traveller59/kitti-object-eval-python#dependencies) compiling problem. It only supports python 3.6+, need `numpy`, `skimage`, `numba`, `fire`. If you have Anaconda, just install `cudatoolkit` in anaconda. Otherwise, please reference to this [page](https://github.com/numba/numba#custom-python-environments) to set up llvm and cuda for numba.
 

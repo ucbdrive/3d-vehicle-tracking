@@ -17,11 +17,11 @@ import time
 import cv2
 import torch
 from torch.autograd import Variable
+from matplotlib.pyplot import imread
 
-from scipy.misc import imread
 from model.utils.config import cfg, cfg_from_file, cfg_from_list
 from model.rpn.bbox_transform import clip_boxes
-from model.nms.nms_wrapper import nms
+from model.roi_layers.nms import nms
 from model.rpn.bbox_transform import bbox_transform_inv
 from model.utils.net_utils import vis_detections
 from model.utils.blob import im_list_to_blob
