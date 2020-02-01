@@ -26,6 +26,9 @@ In ICCV, 2019.
 [Website](https://eborboihuc.github.io/Mono-3DT/)
 
 ## Prerequisites
+```diff
+! NOTE: this repo is made for PyTorch 1.0+ compatible issue, the generated results might be changed.
+```
 
 - Linux (tested on Ubuntu 16.04.4 LTS)
 - Python 3.6.9
