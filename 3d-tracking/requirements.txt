@@ -5,7 +5,7 @@ cffi==1.11.5
 h5py==2.8.0rc1
 Cython==0.28.2
 munkres==1.0.12
-opencv-python==4.1.0.25
+opencv-python==4.1.1.26
 numpy==1.16.1
 numba==0.39.0
 matplotlib==3.0.2
